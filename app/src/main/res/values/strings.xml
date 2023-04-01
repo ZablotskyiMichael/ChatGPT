@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ChatGPT</string>
+    <string name="sendMessage">Send a message...</string>
+</resources>
