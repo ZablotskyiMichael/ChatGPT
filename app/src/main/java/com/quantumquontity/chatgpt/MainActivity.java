@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText inputMessage;
 
     private Button startChatButton;
+    private Button buyPremiumChatButton;
     private TextView resultText;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         inputMessage.setVisibility(View.VISIBLE);
         catLogoImageView.setVisibility(View.GONE);
         startChatButton.setVisibility(View.GONE);
+        buyPremiumChatButton.setVisibility(View.GONE);
 
         // Сохранение нового чата
         String newChatName = getResources().getString(R.string.new_chat);
@@ -133,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         inputMessage.setVisibility(View.GONE);
         catLogoImageView.setVisibility(View.VISIBLE);
         startChatButton.setVisibility(View.VISIBLE);
+        buyPremiumChatButton.setVisibility(View.VISIBLE);
     }
 
     private void initMenu() {
@@ -233,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
         chatsIcon = findViewById(R.id.chatsIcon);
         drawerLayout = findViewById(R.id.drawer_layout);
         startChatButton = findViewById(R.id.startChatButton);
+        buyPremiumChatButton = findViewById(R.id.buyPremiumChatButton);
         navigationView = findViewById(R.id.nav_view);
         catLogoImageView = findViewById(R.id.catLogoImageView);
     }
