@@ -3,16 +3,13 @@ package com.quantumquontity.chatgpt;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.theokanning.openai.completion.CompletionRequest;
+import com.quantumquontity.chatgpt.dao.DBHelper;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
@@ -20,16 +17,16 @@ import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TOKEN = "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";
+
+    /** Вспомогательный класс для работы с БД */
+    private DBHelper dbHelper;
 
     private ImageView sendMessage;
     private EditText inputMessage;
@@ -40,7 +37,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findElement();
+        initServices();
         senOnClickListeners();
+    }
+
+    private void initServices() {
+        dbHelper = new DBHelper(this);
     }
 
     private void senOnClickListeners() {
