@@ -21,6 +21,7 @@ import com.quantumquontity.chatgpt.dao.ChatDao;
 import com.quantumquontity.chatgpt.dao.ChatMessageDao;
 import com.quantumquontity.chatgpt.dao.DBHelper;
 import com.quantumquontity.chatgpt.data.Chat;
+import com.quantumquontity.chatgpt.dict.SubPage;
 import com.quantumquontity.chatgpt.service.ChatMessageService;
 import com.quantumquontity.chatgpt.service.ChatService;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
@@ -55,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
 
+    /**
+     * Вспомогательный класс чтоб понять где мы сейчас.
+     */
+    private SubPage subPage = SubPage.MAIN;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onStartChatClick(View view) {
+        subPage = SubPage.CHAT;
         chatsIcon.setVisibility(View.VISIBLE);
         sendMessage.setVisibility(View.VISIBLE);
         inputMessage.setVisibility(View.VISIBLE);
@@ -108,6 +115,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
        initMenu();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(subPage == SubPage.CHAT){
+            toMainPage();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    private void toMainPage() {
+        subPage = SubPage.MAIN;
+        chatsIcon.setVisibility(View.GONE);
+        sendMessage.setVisibility(View.GONE);
+        inputMessage.setVisibility(View.GONE);
+        catLogoImageView.setVisibility(View.VISIBLE);
+        startChatButton.setVisibility(View.VISIBLE);
     }
 
     private void initMenu() {
