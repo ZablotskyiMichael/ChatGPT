@@ -6,6 +6,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -67,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         ImageView menuIcon = findViewById(R.id.chatsIcon);
         menuIcon.setOnClickListener(view -> {
             if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -79,14 +78,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
         NavigationView navigationView = findViewById(R.id.nav_view);
+        Menu menu = navigationView.getMenu();
+
+        MenuItem menuItem0 = menu.add(Menu.NONE, 0, Menu.NONE, "Home1");
+        menuItem0.setIcon(R.drawable.baseline_menu_24);
+
+        MenuItem menuItem1 = menu.add(Menu.NONE, 1, Menu.NONE, "Gallery2");
+        menuItem1.setIcon(R.drawable.baseline_menu_24);
+
+        MenuItem menuItem2 = menu.add(Menu.NONE, 2, Menu.NONE, "Slideshow");
+        menuItem2.setIcon(R.drawable.baseline_menu_24);
+
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-
-            if (id == R.id.nav_home) {
+            if (id == 0) {
                 Toast.makeText(MainActivity.this, "Home clicked", Toast.LENGTH_SHORT).show();
-            } else if (id == R.id.nav_gallery) {
+            } else if (id == 1) {
                 Toast.makeText(MainActivity.this, "Gallery clicked", Toast.LENGTH_SHORT).show();
-            } else if (id == R.id.nav_slideshow) {
+            } else if (id == 2) {
                 Toast.makeText(MainActivity.this, "Slideshow clicked", Toast.LENGTH_SHORT).show();
             }
 
