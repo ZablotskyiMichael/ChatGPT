@@ -3,4 +3,5 @@
     <string name="sendMessage">Send a message...</string>
     <string name="navigation_drawer_open">navigation drawer open</string>
     <string name="navigation_drawer_close">Navigation drawer close</string>
+    <string name="new_chat">New Chat</string>
 </resources>

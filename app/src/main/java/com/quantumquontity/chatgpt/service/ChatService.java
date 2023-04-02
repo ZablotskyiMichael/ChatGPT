@@ -16,4 +16,10 @@ public class ChatService {
     public List<Chat> getAll(){
         return chatDao.getChatList();
     }
+
+    public void createNewChat(String name){
+        Chat chat = new Chat();
+        chat.setName(name);
+        chatDao.save(chat);
+    }
 }

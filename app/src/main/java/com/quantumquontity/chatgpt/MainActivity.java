@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,8 +47,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageView sendMessage;
     private ImageView chatsIcon;
     private EditText inputMessage;
-    private TextView resultText;
 
+    private Button startChatButton;
+    private TextView resultText;
+    private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
 
@@ -69,6 +72,22 @@ public class MainActivity extends AppCompatActivity {
     private void senOnClickListeners() {
         sendMessage.setOnClickListener(this::onSendMessage);
         initChatsOnClickListeners();
+        startChatButton.setOnClickListener(this::onStartChatClick);
+    }
+
+    private void onStartChatClick(View view) {
+        chatsIcon.setVisibility(View.VISIBLE);
+        sendMessage.setVisibility(View.VISIBLE);
+        inputMessage.setVisibility(View.VISIBLE);
+
+        // Сохранение нового чата
+        String newChatName = getResources().getString(R.string.new_chat);
+        chatService.createNewChat(newChatName);
+
+        // Добавление чата в меню
+        Menu menu = navigationView.getMenu();
+        MenuItem menuItem = menu.add(Menu.NONE, menu.size(), Menu.NONE, newChatName);
+        menuItem.setIcon(R.drawable.round_message_24);
     }
 
     private void initChatsOnClickListeners() {
@@ -77,9 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
-
-        ImageView menuIcon = findViewById(R.id.chatsIcon);
-        menuIcon.setOnClickListener(view -> {
+        chatsIcon.setOnClickListener(view -> {
             if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 drawerLayout.closeDrawer(GravityCompat.START);
             } else {
@@ -87,7 +104,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+       initMenu();
+    }
+
+    private void initMenu() {
         Menu menu = navigationView.getMenu();
 
         int counter = 0;
@@ -184,5 +204,7 @@ public class MainActivity extends AppCompatActivity {
         resultText = findViewById(R.id.resultText);
         chatsIcon = findViewById(R.id.chatsIcon);
         drawerLayout = findViewById(R.id.drawer_layout);
+        startChatButton = findViewById(R.id.startChatButton);
+        navigationView = findViewById(R.id.nav_view);
     }
 }
