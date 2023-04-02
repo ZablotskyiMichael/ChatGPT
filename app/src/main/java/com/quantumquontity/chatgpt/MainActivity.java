@@ -16,7 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.quantumquontity.chatgpt.dao.ChatDao;
+import com.quantumquontity.chatgpt.dao.ChatMessageDao;
 import com.quantumquontity.chatgpt.dao.DBHelper;
+import com.quantumquontity.chatgpt.data.Chat;
+import com.quantumquontity.chatgpt.service.ChatMessageService;
+import com.quantumquontity.chatgpt.service.ChatService;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
@@ -34,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
 
     /** Вспомогательный класс для работы с БД */
     private DBHelper dbHelper;
+
+    private ChatService chatService;
+    private ChatMessageService chatMessageService;
 
     private ImageView sendMessage;
     private ImageView chatsIcon;
@@ -54,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void initServices() {
         dbHelper = new DBHelper(this);
+        chatService = new ChatService(new ChatDao(dbHelper));
+        chatMessageService = new ChatMessageService(new ChatMessageDao(dbHelper));
     }
 
     private void senOnClickListeners() {
@@ -80,24 +90,16 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
         Menu menu = navigationView.getMenu();
 
-        MenuItem menuItem0 = menu.add(Menu.NONE, 0, Menu.NONE, "Home1");
-        menuItem0.setIcon(R.drawable.baseline_menu_24);
-
-        MenuItem menuItem1 = menu.add(Menu.NONE, 1, Menu.NONE, "Gallery2");
-        menuItem1.setIcon(R.drawable.baseline_menu_24);
-
-        MenuItem menuItem2 = menu.add(Menu.NONE, 2, Menu.NONE, "Slideshow");
-        menuItem2.setIcon(R.drawable.baseline_menu_24);
+        int counter = 0;
+        for (Chat chat : chatService.getAll()) {
+            MenuItem menuItem = menu.add(Menu.NONE, counter++, Menu.NONE, chat.getName());
+            menuItem.setIcon(R.drawable.round_message_24);
+        }
 
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == 0) {
-                Toast.makeText(MainActivity.this, "Home clicked", Toast.LENGTH_SHORT).show();
-            } else if (id == 1) {
-                Toast.makeText(MainActivity.this, "Gallery clicked", Toast.LENGTH_SHORT).show();
-            } else if (id == 2) {
-                Toast.makeText(MainActivity.this, "Slideshow clicked", Toast.LENGTH_SHORT).show();
-            }
+            Chat chat = chatService.getAll().get(id);
+            Toast.makeText(MainActivity.this, chat.getName(), Toast.LENGTH_SHORT).show();
 
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
