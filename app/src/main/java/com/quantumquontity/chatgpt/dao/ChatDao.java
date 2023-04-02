@@ -78,10 +78,8 @@ public class ChatDao {
      * Удаление чата по id.
      */
     public void deleteChat(long id) {
-        ContentValues cv = new ContentValues();
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        cv.put(ID_COLUMN, id);
-        db.update(CHAT_TABLE, cv, ID_COLUMN + " = ?", new String[]{String.valueOf(id)});
+        db.delete(CHAT_TABLE, ID_COLUMN + " = ?", new String[]{String.valueOf(id)});
         dbHelper.close();
     }
 }

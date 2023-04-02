@@ -122,9 +122,8 @@ public class MainActivity extends AppCompatActivity {
         long newChatId = chatService.createNewChat(newChatName);
         currentChatId = newChatId;
         // Добавление чата в меню
-        Menu menu = navigationView.getMenu();
-        MenuItem menuItem = menu.add(Menu.NONE, (int) newChatId, Menu.NONE, newChatName);
-        menuItem.setIcon(R.drawable.round_message_24);
+        navigationView.getMenu().clear();
+        initMenu();
         messageCardViewAdapter.refreshData(new ArrayList<>());
     }
 
@@ -148,9 +147,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (subPage == SubPage.CHAT) {
+            dropCurrentChatIfEmpty();
             toMainPage();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    private void dropCurrentChatIfEmpty() {
+        if(chatMessageService.getChatMessagesList(currentChatId).isEmpty()){
+            chatService.deleteChat(currentChatId);
+            currentChatId = -1;
+            currentChatMessage = null;
         }
     }
 

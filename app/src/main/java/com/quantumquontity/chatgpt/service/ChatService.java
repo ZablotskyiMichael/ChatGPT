@@ -17,6 +17,10 @@ public class ChatService {
         return chatDao.getChatList();
     }
 
+    public void deleteChat(long id){
+        chatDao.deleteChat(id);
+    }
+
     public long createNewChat(String name){
         Chat chat = new Chat();
         chat.setName(name);
