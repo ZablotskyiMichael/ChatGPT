@@ -1,5 +1,9 @@
 package com.quantumquontity.chatgpt;
 
+import static com.theokanning.openai.service.OpenAiService.defaultClient;
+import static com.theokanning.openai.service.OpenAiService.defaultObjectMapper;
+import static com.theokanning.openai.service.OpenAiService.defaultRetrofit;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -17,8 +21,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.navigation.NavigationView;
 import com.quantumquontity.chatgpt.adapter.MessageCardViewAdapter;
+import com.quantumquontity.chatgpt.chatGrp.OpenAiServiceCustom;
 import com.quantumquontity.chatgpt.dao.ChatDao;
 import com.quantumquontity.chatgpt.dao.ChatMessageDao;
 import com.quantumquontity.chatgpt.dao.DBHelper;
@@ -27,18 +33,24 @@ import com.quantumquontity.chatgpt.dict.SubPage;
 import com.quantumquontity.chatgpt.dto.ChatMessageCardView;
 import com.quantumquontity.chatgpt.service.ChatMessageService;
 import com.quantumquontity.chatgpt.service.ChatService;
+import com.theokanning.openai.OpenAiApi;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
-import com.theokanning.openai.service.OpenAiService;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
+
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -223,7 +235,13 @@ public class MainActivity extends AppCompatActivity {
         createAndSaveChatMessage(requestMessage, ChatMessageRole.USER);
         currentChatMessage = createAndSaveChatMessage("", ChatMessageRole.SYSTEM);
 
-        OpenAiService service = new OpenAiService(TOKEN);
+        ObjectMapper mapper = defaultObjectMapper();
+        OkHttpClient client = defaultClient(TOKEN, Duration.ofSeconds(30));
+        Retrofit retrofit = defaultRetrofit(client, mapper);
+
+        OpenAiApi aiApi = retrofit.create(OpenAiApi.class);
+        ExecutorService executorService = client.dispatcher().executorService();
+        OpenAiServiceCustom service = new OpenAiServiceCustom(aiApi, executorService);
         Thread myThread = new Thread(() -> {
             try {
                 List<ChatMessage> messages = getChatMessages();
@@ -237,7 +255,9 @@ public class MainActivity extends AppCompatActivity {
                         .build();
 
                 service.streamChatCompletion(chatCompletionRequest)
-                        .subscribe(this::onResponse, Throwable::printStackTrace);
+                        .subscribeOn(Schedulers.io())
+                        .blockingSubscribe(this::onResponse);
+
 
             } catch (Exception e) {
                 e.printStackTrace();
