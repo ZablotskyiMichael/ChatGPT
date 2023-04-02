@@ -126,8 +126,8 @@
                 app:endIconDrawable="@drawable/baseline_send_24"
                 app:endIconTint="#838383"
                 app:errorEnabled="true"
-                app:boxBackgroundColor="#F4EDE7"
-                android:visibility="visible">
+                android:visibility="gone"
+                app:boxBackgroundColor="#F4EDE7">
 
 
                 <com.google.android.material.textfield.TextInputEditText

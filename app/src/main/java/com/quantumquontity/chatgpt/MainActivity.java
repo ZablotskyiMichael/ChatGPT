@@ -218,9 +218,7 @@ public class MainActivity extends AppCompatActivity {
         OpenAiService service = new OpenAiService(TOKEN);
         Thread myThread = new Thread(() -> {
             try {
-                final List<ChatMessage> messages = new ArrayList<>();
-                final ChatMessage systemMessage = new ChatMessage(ChatMessageRole.USER.value(), requestMessage);
-                messages.add(systemMessage);
+                List<ChatMessage> messages = getChatMessages();
                 ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
                         .builder()
                         .model("gpt-3.5-turbo")
@@ -238,6 +236,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         myThread.start();
+    }
+
+    /**
+     * Собирает историю переписки для отправки в chatGPT.
+     */
+    private List<ChatMessage> getChatMessages() {
+        return chatMessageService.getChatMessagesList(currentChatId)
+                .stream()
+                .filter(message -> !message.getText().isEmpty())
+                .map(message -> new ChatMessage(message.getUserRole(), message.getText()))
+                .collect(Collectors.toList());
     }
 
     private com.quantumquontity.chatgpt.data.ChatMessage createAndSaveChatMessage(String requestMessage, ChatMessageRole role) {
