@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private ChatService chatService;
     private ChatMessageService chatMessageService;
 
+    private ImageView catLogoImageView;
     private ImageView sendMessage;
     private ImageView chatsIcon;
     private EditText inputMessage;
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         chatsIcon.setVisibility(View.VISIBLE);
         sendMessage.setVisibility(View.VISIBLE);
         inputMessage.setVisibility(View.VISIBLE);
+        catLogoImageView.setVisibility(View.GONE);
+        startChatButton.setVisibility(View.GONE);
 
         // Сохранение нового чата
         String newChatName = getResources().getString(R.string.new_chat);
@@ -206,5 +209,6 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         startChatButton = findViewById(R.id.startChatButton);
         navigationView = findViewById(R.id.nav_view);
+        catLogoImageView = findViewById(R.id.catLogoImageView);
     }
 }

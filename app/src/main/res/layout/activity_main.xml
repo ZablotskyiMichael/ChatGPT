@@ -18,14 +18,14 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:orientation="vertical">
 
             <!-- Иконка с меню -->
             <ImageView
                 android:id="@+id/chatsIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:src="@drawable/baseline_menu_24" />
 
             <!-- Текстовое поле для вывода результата -->
