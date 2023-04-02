@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Основной контент страницы -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:background="@color/background"
+    android:orientation="vertical">
 
         <!-- Верхняя часть страницы с текстовым полем и меню -->
         <LinearLayout
@@ -39,24 +38,50 @@
         <!-- Нижняя часть страницы с текстовым полем и кнопкой отправки -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="0dp"
+        android:layout_weight="10"
+        android:orientation="vertical">
 
-            <!-- Текстовое поле для ввода текста -->
-            <EditText
-                android:id="@+id/inputMessage"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="@string/sendMessage"
-                android:inputType="text" />
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="top"
+            app:srcCompat="@drawable/logo_main"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/startChatButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="START CHAT"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Текстовое поле для ввода текста -->
+
+
+        <EditText
+            android:id="@+id/inputMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/sendMessage"
+            android:inputType="text" />
 
             <!-- Кнопка отправки сообщения -->
             <ImageView
                 android:id="@+id/sendMessage"
-                android:layout_gravity="center"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
                 android:src="@drawable/baseline_send_24" />
         </LinearLayout>
     </LinearLayout>
