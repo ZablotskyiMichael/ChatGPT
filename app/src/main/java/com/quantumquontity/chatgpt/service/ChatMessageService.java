@@ -16,4 +16,14 @@ public class ChatMessageService {
     public List<ChatMessage> getChatMessagesList(long chatId){
         return chatMessageDao.getChatMessagesList(chatId);
     }
+
+    public void updateChatMessageText(long id, String newText){
+        chatMessageDao.updateChatMessageText(id, newText);
+    }
+
+    public ChatMessage save(ChatMessage message){
+        long id = chatMessageDao.save(message);
+        message.setId(id);
+        return message;
+    }
 }

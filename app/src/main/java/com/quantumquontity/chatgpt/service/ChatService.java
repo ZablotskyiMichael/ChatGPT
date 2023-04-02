@@ -17,9 +17,9 @@ public class ChatService {
         return chatDao.getChatList();
     }
 
-    public void createNewChat(String name){
+    public long createNewChat(String name){
         Chat chat = new Chat();
         chat.setName(name);
-        chatDao.save(chat);
+        return chatDao.save(chat);
     }
 }

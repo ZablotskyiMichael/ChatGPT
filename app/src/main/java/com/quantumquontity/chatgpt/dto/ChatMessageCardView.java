@@ -1,10 +1,8 @@
-package com.quantumquontity.chatgpt.data;
+package com.quantumquontity.chatgpt.dto;
 
-/**
- * Сообщение в чате. От пользователя или ChatGPT.
- */
-public class ChatMessage {
+import com.quantumquontity.chatgpt.data.ChatMessage;
 
+public class ChatMessageCardView {
     private long id;
 
     /**
@@ -22,20 +20,14 @@ public class ChatMessage {
      */
     private String userRole;
 
-    public ChatMessage() {
+    public ChatMessageCardView() {
     }
 
-    public ChatMessage(long chatId, String text, String userRole) {
-        this.chatId = chatId;
-        this.text = text;
-        this.userRole = userRole;
-    }
-
-    public ChatMessage(long id, long chatId, String text, String userRole) {
-        this.id = id;
-        this.chatId = chatId;
-        this.text = text;
-        this.userRole = userRole;
+    public ChatMessageCardView(ChatMessage chatMessage) {
+        this.id = chatMessage.getId();
+        this.chatId = chatMessage.getChatId();
+        this.text = chatMessage.getText();
+        this.userRole = chatMessage.getUserRole();
     }
 
     public long getId() {

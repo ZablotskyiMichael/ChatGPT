@@ -22,7 +22,7 @@ public class ChatDao {
     }
 
     /**
-     * Получить список чатов
+     * Получить список чатов.
      */
     public List<Chat> getChatList() {
         List<Chat> res = new ArrayList<>();
@@ -44,7 +44,7 @@ public class ChatDao {
     }
 
     /**
-     * Сохранение чата
+     * Сохранение чата.
      */
     public long save(Chat chat) {
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
@@ -54,11 +54,33 @@ public class ChatDao {
         return sqLiteDatabase.insert(CHAT_TABLE, null, values);
     }
 
-    /** Обновляет название чата */
+    /**
+     * Обновляет название чата.
+     */
     public void updateChatName(long id, String newName) {
         ContentValues cv = new ContentValues();
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         cv.put(CHAT_TABLE_NAME_COLUMN, newName);
+        db.update(CHAT_TABLE, cv, ID_COLUMN + " = ?", new String[]{String.valueOf(id)});
+        dbHelper.close();
+    }
+
+    /**
+     * Удаление всех чатов.
+     */
+    public void deleteAll() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(CHAT_TABLE, null, null);
+        dbHelper.close();
+    }
+
+    /**
+     * Удаление чата по id.
+     */
+    public void deleteChat(long id) {
+        ContentValues cv = new ContentValues();
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        cv.put(ID_COLUMN, id);
         db.update(CHAT_TABLE, cv, ID_COLUMN + " = ?", new String[]{String.valueOf(id)});
         dbHelper.close();
     }

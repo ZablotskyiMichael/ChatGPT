@@ -16,6 +16,7 @@
 
         <!-- Верхняя часть страницы с текстовым полем и меню -->
         <LinearLayout
+            android:id="@+id/messagesLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -29,18 +30,15 @@
                 android:visibility="gone"
                 android:src="@drawable/baseline_menu_24" />
 
-            <!-- Текстовое поле для вывода результата -->
-            <TextView
-                android:id="@+id/resultText"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/messagesRecyclerView"
+                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="top|start"
-                android:textSize="18sp" />
+                android:layout_height="match_parent" />
         </LinearLayout>
 
-        <!-- Нижняя часть страницы с текстовым полем и кнопкой отправки -->
         <LinearLayout
+            android:id="@+id/catLogoWrapper"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="10"

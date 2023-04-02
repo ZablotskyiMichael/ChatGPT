@@ -4,6 +4,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,15 +15,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.quantumquontity.chatgpt.adapter.MessageCardViewAdapter;
 import com.quantumquontity.chatgpt.dao.ChatDao;
 import com.quantumquontity.chatgpt.dao.ChatMessageDao;
 import com.quantumquontity.chatgpt.dao.DBHelper;
 import com.quantumquontity.chatgpt.data.Chat;
 import com.quantumquontity.chatgpt.dict.SubPage;
+import com.quantumquontity.chatgpt.dto.ChatMessageCardView;
 import com.quantumquontity.chatgpt.service.ChatMessageService;
 import com.quantumquontity.chatgpt.service.ChatService;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
@@ -32,14 +35,18 @@ import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TOKEN = "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";
 
-    /** Вспомогательный класс для работы с БД */
+    /**
+     * Вспомогательный класс для работы с БД
+     */
     private DBHelper dbHelper;
 
     private ChatService chatService;
@@ -51,8 +58,10 @@ public class MainActivity extends AppCompatActivity {
     private EditText inputMessage;
 
     private Button startChatButton;
-    private Button buyPremiumChatButton;
-    private TextView resultText;
+    private RecyclerView messagesRecyclerView;
+    private LinearLayout messagesLayout;
+    private LinearLayout catLogoWrapper;
+    private MessageCardViewAdapter messageCardViewAdapter;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
@@ -61,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
      * Вспомогательный класс чтоб понять где мы сейчас.
      */
     private SubPage subPage = SubPage.MAIN;
+    private long currentChatId = -1;
+    private com.quantumquontity.chatgpt.data.ChatMessage currentChatMessage = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +79,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         findElement();
         initServices();
+        initData();
         senOnClickListeners();
+    }
+
+    private void initData() {
+        initChats();
+    }
+
+    private void initChats() {
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        messagesRecyclerView.setLayoutManager(llm);
+        messageCardViewAdapter = new MessageCardViewAdapter(this, new ArrayList<>());
+        messagesRecyclerView.setAdapter(messageCardViewAdapter);
     }
 
     private void initServices() {
@@ -90,16 +113,19 @@ public class MainActivity extends AppCompatActivity {
         inputMessage.setVisibility(View.VISIBLE);
         catLogoImageView.setVisibility(View.GONE);
         startChatButton.setVisibility(View.GONE);
-        buyPremiumChatButton.setVisibility(View.GONE);
+        messagesRecyclerView.setVisibility(View.VISIBLE);
+        messagesLayout.setVisibility(View.VISIBLE);
+        catLogoWrapper.setVisibility(View.GONE);
 
         // Сохранение нового чата
         String newChatName = getResources().getString(R.string.new_chat);
-        chatService.createNewChat(newChatName);
-
+        long newChatId = chatService.createNewChat(newChatName);
+        currentChatId = newChatId;
         // Добавление чата в меню
         Menu menu = navigationView.getMenu();
-        MenuItem menuItem = menu.add(Menu.NONE, menu.size(), Menu.NONE, newChatName);
+        MenuItem menuItem = menu.add(Menu.NONE, (int) newChatId, Menu.NONE, newChatName);
         menuItem.setIcon(R.drawable.round_message_24);
+        messageCardViewAdapter.refreshData(new ArrayList<>());
     }
 
     private void initChatsOnClickListeners() {
@@ -116,12 +142,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-       initMenu();
+        initMenu();
     }
 
     @Override
     public void onBackPressed() {
-        if(subPage == SubPage.CHAT){
+        if (subPage == SubPage.CHAT) {
             toMainPage();
         } else {
             super.onBackPressed();
@@ -135,26 +161,37 @@ public class MainActivity extends AppCompatActivity {
         inputMessage.setVisibility(View.GONE);
         catLogoImageView.setVisibility(View.VISIBLE);
         startChatButton.setVisibility(View.VISIBLE);
-        buyPremiumChatButton.setVisibility(View.VISIBLE);
+        messagesRecyclerView.setVisibility(View.GONE);
+        messagesLayout.setVisibility(View.GONE);
+        catLogoWrapper.setVisibility(View.VISIBLE);
     }
 
     private void initMenu() {
         Menu menu = navigationView.getMenu();
 
-        int counter = 0;
-        for (Chat chat : chatService.getAll()) {
-            MenuItem menuItem = menu.add(Menu.NONE, counter++, Menu.NONE, chat.getName());
+        List<Chat> sortedList = chatService.getAll().stream()
+                .sorted(Comparator.comparingLong(chat1 -> - chat1.getId()))
+                .collect(Collectors.toList());
+        for (Chat chat : sortedList) {
+            MenuItem menuItem = menu.add(Menu.NONE, (int) chat.getId(), Menu.NONE, chat.getName() + " " + chat.getId());
             menuItem.setIcon(R.drawable.round_message_24);
         }
 
         navigationView.setNavigationItemSelectedListener(item -> {
-            int id = item.getItemId();
-            Chat chat = chatService.getAll().get(id);
-            Toast.makeText(MainActivity.this, chat.getName(), Toast.LENGTH_SHORT).show();
-
+            currentChatId = item.getItemId();
+            uploadMessagesForCurrentChat();
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
+    }
+
+    private void uploadMessagesForCurrentChat() {
+        messageCardViewAdapter.refreshData(
+                chatMessageService.getChatMessagesList(currentChatId)
+                        .stream()
+                        .map(ChatMessageCardView::new)
+                        .collect(Collectors.toList())
+        );
     }
 
     @Override
@@ -168,13 +205,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void onSendMessage(View view) {
         hideKeyboard(view);
-        if(inputMessage.getText().toString().isEmpty()){
+        if (inputMessage.getText().toString().isEmpty()) {
             // кинуть ошибку
             return;
         }
-        resultText.setText("");// чистим предыдущий результат
         String requestMessage = inputMessage.getText().toString();
         inputMessage.setText("");
+
+        createAndSaveChatMessage(requestMessage, ChatMessageRole.USER);
+        currentChatMessage = createAndSaveChatMessage("", ChatMessageRole.SYSTEM);
 
         OpenAiService service = new OpenAiService(TOKEN);
         Thread myThread = new Thread(() -> {
@@ -201,7 +240,19 @@ public class MainActivity extends AppCompatActivity {
         myThread.start();
     }
 
-    private void hideKeyboard(View view){
+    private com.quantumquontity.chatgpt.data.ChatMessage createAndSaveChatMessage(String requestMessage, ChatMessageRole role) {
+        com.quantumquontity.chatgpt.data.ChatMessage savedMessage = chatMessageService.save(
+                new com.quantumquontity.chatgpt.data.ChatMessage(
+                        currentChatId,
+                        requestMessage,
+                        role.value()
+                )
+        );
+        messageCardViewAdapter.addItem(new ChatMessageCardView(savedMessage));
+        return savedMessage;
+    }
+
+    private void hideKeyboard(View view) {
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
@@ -210,18 +261,21 @@ public class MainActivity extends AppCompatActivity {
         System.out.println(chatCompletionChunk.toString());
         for (ChatCompletionChoice choice : chatCompletionChunk.getChoices()) {
             ChatMessage message = choice.getMessage();
-            if(message != null){
+            if (message != null) {
                 String content = message.getContent();
-                if(content != null){
+                if (content != null) {
                     threadSleep(100);
-                    runOnUiThread(() ->
-                            resultText.setText(resultText.getText() + content));
+                    runOnUiThread(() -> {
+                        currentChatMessage.setText(currentChatMessage.getText() + content);
+                        messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
+                    });
                 }
             }
         }
+        chatMessageService.updateChatMessageText(currentChatMessage.getId(), currentChatMessage.getText());
     }
 
-    private void threadSleep(long mills){
+    private void threadSleep(long mills) {
         try {
             Thread.sleep(mills);
         } catch (InterruptedException e) {
@@ -232,12 +286,13 @@ public class MainActivity extends AppCompatActivity {
     private void findElement() {
         sendMessage = findViewById(R.id.sendMessage);
         inputMessage = findViewById(R.id.inputMessage);
-        resultText = findViewById(R.id.resultText);
         chatsIcon = findViewById(R.id.chatsIcon);
         drawerLayout = findViewById(R.id.drawer_layout);
         startChatButton = findViewById(R.id.startChatButton);
-        buyPremiumChatButton = findViewById(R.id.buyPremiumChatButton);
         navigationView = findViewById(R.id.nav_view);
         catLogoImageView = findViewById(R.id.catLogoImageView);
+        messagesRecyclerView = findViewById(R.id.messagesRecyclerView);
+        messagesLayout = findViewById(R.id.messagesLayout);
+        catLogoWrapper = findViewById(R.id.catLogoWrapper);
     }
 }

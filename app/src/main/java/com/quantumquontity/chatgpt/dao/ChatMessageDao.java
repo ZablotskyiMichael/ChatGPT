@@ -65,6 +65,17 @@ public class ChatMessageDao {
     }
 
     /**
+     * Обновляет текст сообщения.
+     */
+    public void updateChatMessageText(long id, String newText) {
+        ContentValues cv = new ContentValues();
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        cv.put(CHAT_MESSAGE_TEXT_COLUMN, newText);
+        db.update(CHAT_MESSAGE_TABLE, cv, ID_COLUMN + " = ?", new String[]{String.valueOf(id)});
+        dbHelper.close();
+    }
+
+    /**
      * Удаляет все сообщения чата по id чата.
      */
     public void deleteChatMessagesByChatId(long chatId) {
