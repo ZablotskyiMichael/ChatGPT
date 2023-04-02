@@ -305,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         currentChatMessage.setText(currentChatMessage.getText() + content);
                         messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
+                        messagesRecyclerView.smoothScrollToPosition(messageCardViewAdapter.getItemCount() - 1);
                     });
                 }
             }
