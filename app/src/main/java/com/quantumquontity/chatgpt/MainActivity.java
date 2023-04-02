@@ -1,14 +1,20 @@
 package com.quantumquontity.chatgpt;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.material.navigation.NavigationView;
 import com.quantumquontity.chatgpt.dao.DBHelper;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionChunk;
@@ -29,8 +35,12 @@ public class MainActivity extends AppCompatActivity {
     private DBHelper dbHelper;
 
     private ImageView sendMessage;
+    private ImageView chatsIcon;
     private EditText inputMessage;
     private TextView resultText;
+
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +57,51 @@ public class MainActivity extends AppCompatActivity {
 
     private void senOnClickListeners() {
         sendMessage.setOnClickListener(this::onSendMessage);
+        initChatsOnClickListeners();
+    }
+
+    private void initChatsOnClickListeners() {
+
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
+
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ImageView menuIcon = findViewById(R.id.chatsIcon);
+        menuIcon.setOnClickListener(view -> {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                Toast.makeText(MainActivity.this, "Home clicked", Toast.LENGTH_SHORT).show();
+            } else if (id == R.id.nav_gallery) {
+                Toast.makeText(MainActivity.this, "Gallery clicked", Toast.LENGTH_SHORT).show();
+            } else if (id == R.id.nav_slideshow) {
+                Toast.makeText(MainActivity.this, "Slideshow clicked", Toast.LENGTH_SHORT).show();
+            }
+
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void onSendMessage(View view) {
@@ -116,5 +171,7 @@ public class MainActivity extends AppCompatActivity {
         sendMessage = findViewById(R.id.sendMessage);
         inputMessage = findViewById(R.id.inputMessage);
         resultText = findViewById(R.id.resultText);
+        chatsIcon = findViewById(R.id.chatsIcon);
+        drawerLayout = findViewById(R.id.drawer_layout);
     }
 }
