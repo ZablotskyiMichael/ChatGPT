@@ -15,21 +15,47 @@
         android:orientation="vertical">
 
         <!-- Верхняя часть страницы с текстовым полем и меню -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                >
+            <!-- Иконка с меню -->
+            <ImageView
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="8dp"
+                android:id="@+id/chatsIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:visibility="invisible"
+                android:src="@drawable/baseline_menu_24"
+                />
+            <TextView
+                android:layout_marginTop="8dp"
+                android:id="@+id/chatGptIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:visibility="visible"
+                android:text="CatGPT"
+                android:textSize="30sp"
+                android:textColor="@color/white"
+                android:shadowRadius="8"
+                android:shadowDy="4"
+                android:shadowDx="4"
+                android:shadowColor="@color/black"
+                android:src="@drawable/baseline_menu_24"
+                android:layout_gravity="center"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         <LinearLayout
             android:id="@+id/messagesLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical">
-
-            <!-- Иконка с меню -->
-            <ImageView
-                android:id="@+id/chatsIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:src="@drawable/baseline_menu_24" />
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/messagesRecyclerView"
                 android:visibility="gone"
@@ -104,6 +130,20 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!--<com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:indicatorSize="48dp"
+            app:indicatorColor="@color/background"
+            app:trackColor="@color/purple_700"
+            app:trackThickness="4dp"
+            android:indeterminate="true"
+            app:indicatorInset="@dimen/cardview_default_elevation"
+            app:showAnimationBehavior="none"
+            app:hideAnimationBehavior="inward"
+            android:layout_gravity="center"
+            android:visibility="gone" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -113,10 +153,9 @@
             android:paddingEnd="10dp">
 
             <!-- Текстовое поле для ввода текста -->
-
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/inputMessegeLayout"
-                style="@style/Widget.App.TextInputLayout"
+                android:id="@+id/inputMessageLayout"
+                style="@style/ThemeOverlay.App.TextInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -127,38 +166,26 @@
                 app:endIconTint="#838383"
                 app:errorEnabled="true"
                 android:visibility="gone"
-                app:boxBackgroundColor="#F4EDE7">
-
+                app:boxStrokeColor="#C1B8B0"
+                app:boxCornerRadiusBottomEnd="15dp"
+                app:boxCornerRadiusTopStart="15dp"
+                app:boxCornerRadiusTopEnd="15dp"
+                app:boxCornerRadiusBottomStart="15dp"
+                app:boxBackgroundColor="#F4EDE7"
+                app:boxStrokeWidth="0.2dp"
+                app:hintTextColor="#838383">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/inputMessage2"
+                    android:id="@+id/inputMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="@string/sendMessage"
                     android:inputType="text"
-                    android:textColor="#828282"
-                    android:textColorHint="#828282"
-                    android:visibility="visible"/>
+                    android:textColor="#424242"
+                    android:textColorHint="#9F9F9F"
+                    android:visibility="gone"/>
             </com.google.android.material.textfield.TextInputLayout>
-
-            <EditText
-                android:id="@+id/inputMessage"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="@string/sendMessage"
-                android:inputType="text"
-                android:visibility="gone" />
-
-            <!-- Кнопка отправки сообщения -->
-            <ImageView
-                android:id="@+id/sendMessage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/baseline_send_24"
-                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 

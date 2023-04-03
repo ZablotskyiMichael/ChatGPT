@@ -11,18 +11,28 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.quantumquontity.chatgpt.adapter.MessageCardViewAdapter;
 import com.quantumquontity.chatgpt.chatGrp.OpenAiServiceCustom;
 import com.quantumquontity.chatgpt.dao.ChatDao;
@@ -63,12 +73,12 @@ public class MainActivity extends AppCompatActivity {
 
     private ChatService chatService;
     private ChatMessageService chatMessageService;
-
     private ImageView catLogoImageView;
-    private ImageView sendMessage;
+    private TextInputLayout inputMessageLayout;
     private ImageView chatsIcon;
     private EditText inputMessage;
 
+    private CircularProgressIndicator progressBar;
     private Button startChatButton;
     private RecyclerView messagesRecyclerView;
     private LinearLayout messagesLayout;
@@ -113,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void senOnClickListeners() {
-        sendMessage.setOnClickListener(this::onSendMessage);
+        inputMessageLayout.setEndIconOnClickListener(this::onSendMessage);
         initChatsOnClickListeners();
         startChatButton.setOnClickListener(this::onStartChatClick);
     }
@@ -121,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
     private void onStartChatClick(View view) {
         subPage = SubPage.CHAT;
         chatsIcon.setVisibility(View.VISIBLE);
-        sendMessage.setVisibility(View.VISIBLE);
+        inputMessageLayout.setVisibility(View.VISIBLE);
         inputMessage.setVisibility(View.VISIBLE);
         catLogoImageView.setVisibility(View.GONE);
         startChatButton.setVisibility(View.GONE);
@@ -140,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initChatsOnClickListeners() {
-
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
@@ -177,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
     private void toMainPage() {
         subPage = SubPage.MAIN;
         chatsIcon.setVisibility(View.GONE);
-        sendMessage.setVisibility(View.GONE);
+        inputMessageLayout.setVisibility(View.GONE);
         inputMessage.setVisibility(View.GONE);
         catLogoImageView.setVisibility(View.VISIBLE);
         startChatButton.setVisibility(View.VISIBLE);
@@ -229,6 +238,24 @@ public class MainActivity extends AppCompatActivity {
             // кинуть ошибку
             return;
         }
+        // Заменить endIcon на иконку с анимацией загрузки
+   inputMessageLayout.setEndIconDrawable(R.drawable.circular_loading);
+        Drawable drawable = inputMessageLayout.getEndIconDrawable();
+        if (drawable instanceof Animatable) {
+            ((Animatable) drawable).start();
+        }
+
+// Отключить возможность ввода в inputMessage
+        if (inputMessage.getText() != null) {
+            inputMessage.setEnabled(false);
+        }
+
+// Включить ProgressBar и выполнить действия по загрузке
+       /* progressBar.setVisibility(View.VISIBLE);
+        progressBar.show();*/
+
+        // выполнить действия по загрузке, отправку данных на сервер ИИ
+
         String requestMessage = inputMessage.getText().toString();
         inputMessage.setText("");
 
@@ -310,6 +337,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
+// После завершения загрузки снова включить возможность ввода в inputMessageLayout и скрыть ProgressBar
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (inputMessage.getText().toString().isEmpty()) {
+                    inputMessage.setEnabled(true);
+                }
+                /*progressBar.hide();*/
+                 // Восстановить endIcon
+                inputMessageLayout.setEndIconDrawable(R.drawable.baseline_send_24);
+                inputMessageLayout.setEndIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.iconEnd)));
+            }
+        });
         chatMessageService.updateChatMessageText(currentChatMessage.getId(), currentChatMessage.getText());
     }
 
@@ -322,7 +363,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void findElement() {
-        sendMessage = findViewById(R.id.sendMessage);
         inputMessage = findViewById(R.id.inputMessage);
         chatsIcon = findViewById(R.id.chatsIcon);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -332,5 +372,7 @@ public class MainActivity extends AppCompatActivity {
         messagesRecyclerView = findViewById(R.id.messagesRecyclerView);
         messagesLayout = findViewById(R.id.messagesLayout);
         catLogoWrapper = findViewById(R.id.catLogoWrapper);
+        inputMessageLayout = findViewById(R.id.inputMessageLayout);
+       /* progressBar = findViewById(R.id.progressBar);*/
     }
 }
