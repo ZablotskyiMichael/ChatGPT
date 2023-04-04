@@ -18,20 +18,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.quantumquontity.chatgpt.adapter.MessageCardViewAdapter;
 import com.quantumquontity.chatgpt.chatGrp.OpenAiServiceCustom;
@@ -58,13 +53,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TOKEN = "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";
+    private static final String MODEL_TYPE = "gpt-3.5-turbo";
 
     /**
      * Вспомогательный класс для работы с БД
@@ -192,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void dropCurrentChatIfEmpty() {
-        if(chatMessageService.getChatMessagesList(currentChatId).isEmpty()){
+        if (chatMessageService.getChatMessagesList(currentChatId).isEmpty()) {
             chatService.deleteChat(currentChatId);
             currentChatId = -1;
             currentChatMessage = null;
@@ -215,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
         Menu menu = navigationView.getMenu();
 
         List<Chat> sortedList = chatService.getAll().stream()
-                .sorted(Comparator.comparingLong(chat1 -> - chat1.getId()))
+                .sorted(Comparator.comparingLong(chat -> -chat.getId()))
                 .collect(Collectors.toList());
         for (Chat chat : sortedList) {
             MenuItem menuItem = menu.add(Menu.NONE, (int) chat.getId(), Menu.NONE, chat.getName() + " " + chat.getId());
@@ -256,18 +251,18 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         // Заменить endIcon на иконку с анимацией загрузки
-   inputMessageLayout.setEndIconDrawable(R.drawable.circular_loading);
+        inputMessageLayout.setEndIconDrawable(R.drawable.circular_loading);
         Drawable drawable = inputMessageLayout.getEndIconDrawable();
         if (drawable instanceof Animatable) {
             ((Animatable) drawable).start();
         }
 
-// Отключить возможность ввода в inputMessage
+        // Отключить возможность ввода в inputMessage
         if (inputMessage.getText() != null) {
             inputMessage.setEnabled(false);
         }
 
-// Включить ProgressBar и выполнить действия по загрузке
+        // Включить ProgressBar и выполнить действия по загрузке
        /* progressBar.setVisibility(View.VISIBLE);
         progressBar.show();*/
 
@@ -286,28 +281,26 @@ public class MainActivity extends AppCompatActivity {
         OpenAiApi aiApi = retrofit.create(OpenAiApi.class);
         ExecutorService executorService = client.dispatcher().executorService();
         OpenAiServiceCustom service = new OpenAiServiceCustom(aiApi, executorService);
-        Thread myThread = new Thread(() -> {
+        List<ChatMessage> messages = getChatMessages();
+        ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
+                .builder()
+                .model(MODEL_TYPE)
+                .messages(messages)
+                .n(1)
+                .maxTokens(250)
+                .logitBias(new HashMap<>())
+                .build();
+
+        new Thread(() -> {
             try {
-                List<ChatMessage> messages = getChatMessages();
-                ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
-                        .builder()
-                        .model("gpt-3.5-turbo")
-                        .messages(messages)
-                        .n(1)
-                        .maxTokens(250)
-                        .logitBias(new HashMap<>())
-                        .build();
-
-                service.streamChatCompletion(chatCompletionRequest)
-                        .subscribeOn(Schedulers.io())
-                        .blockingSubscribe(this::onResponse);
-
-
+                service.executeChatCompletion(chatCompletionRequest, this::onResponse);
             } catch (Exception e) {
-                e.printStackTrace();
+                runOnUiThread(() -> {
+                    currentChatMessage.setText(e.getMessage());
+                    messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
+                });
             }
-        });
-        myThread.start();
+        }).start();
     }
 
     /**
@@ -345,38 +338,25 @@ public class MainActivity extends AppCompatActivity {
             if (message != null) {
                 String content = message.getContent();
                 if (content != null) {
-                    threadSleep(100);
                     runOnUiThread(() -> {
                         currentChatMessage.setText(currentChatMessage.getText() + content);
                         messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
-                        messagesRecyclerView.smoothScrollToPosition(messageCardViewAdapter.getItemCount() - 1);
                     });
                 }
             }
         }
 
-// После завершения загрузки снова включить возможность ввода в inputMessageLayout и скрыть ProgressBar
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (inputMessage.getText().toString().isEmpty()) {
-                    inputMessage.setEnabled(true);
-                }
-                /*progressBar.hide();*/
-                 // Восстановить endIcon
-                inputMessageLayout.setEndIconDrawable(R.drawable.baseline_send_24);
-                inputMessageLayout.setEndIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.iconEnd)));
+        // После завершения загрузки снова включить возможность ввода в inputMessageLayout и скрыть ProgressBar
+        runOnUiThread(() -> {
+            if (inputMessage.getText().toString().isEmpty()) {
+                inputMessage.setEnabled(true);
             }
+            /*progressBar.hide();*/
+            // Восстановить endIcon
+            inputMessageLayout.setEndIconDrawable(R.drawable.baseline_send_24);
+            inputMessageLayout.setEndIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.iconEnd)));
         });
         chatMessageService.updateChatMessageText(currentChatMessage.getId(), currentChatMessage.getText());
-    }
-
-    private void threadSleep(long mills) {
-        try {
-            Thread.sleep(mills);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private void findElement() {
@@ -396,6 +376,6 @@ public class MainActivity extends AppCompatActivity {
         clearAllChat = headerLayout.findViewById(R.id.clearAllChat);
         createNewChat = headerLayout.findViewById(R.id.createNewChat);
 
-       /* progressBar = findViewById(R.id.progressBar);*/
+        /* progressBar = findViewById(R.id.progressBar);*/
     }
 }
