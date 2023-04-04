@@ -20,6 +20,9 @@ public class ChatService {
     public void deleteChat(long id){
         chatDao.deleteChat(id);
     }
+    public void deleteAllChat(){
+        chatDao.deleteAll();
+    }
 
     public long createNewChat(String name){
         Chat chat = new Chat();

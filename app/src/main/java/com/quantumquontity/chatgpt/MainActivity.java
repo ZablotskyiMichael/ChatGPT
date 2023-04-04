@@ -86,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     private MessageCardViewAdapter messageCardViewAdapter;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
+    private LinearLayout clearAllChat;
+    private LinearLayout createNewChat;
     private ActionBarDrawerToggle drawerToggle;
 
     /**
@@ -126,9 +128,23 @@ public class MainActivity extends AppCompatActivity {
         inputMessageLayout.setEndIconOnClickListener(this::onSendMessage);
         initChatsOnClickListeners();
         startChatButton.setOnClickListener(this::onStartChatClick);
+
+
+        clearAllChat.setOnClickListener(this::deleteAllChat);
+        createNewChat.setOnClickListener(this::onStartChatClick);
+
+    }
+
+    private void deleteAllChat(View view) {
+        chatService.deleteAllChat();
+        drawerLayout.closeDrawer(GravityCompat.START);
     }
 
     private void onStartChatClick(View view) {
+        // проверка, открыт ли NavigationView
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
         subPage = SubPage.CHAT;
         chatsIcon.setVisibility(View.VISIBLE);
         inputMessageLayout.setVisibility(View.VISIBLE);
@@ -212,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
+
     }
 
     private void uploadMessagesForCurrentChat() {
@@ -373,6 +390,12 @@ public class MainActivity extends AppCompatActivity {
         messagesLayout = findViewById(R.id.messagesLayout);
         catLogoWrapper = findViewById(R.id.catLogoWrapper);
         inputMessageLayout = findViewById(R.id.inputMessageLayout);
+
+        //нужно что бы найти HeaderView и LinearLayout внутри navigationView
+        View headerLayout = navigationView.getHeaderView(0);
+        clearAllChat = headerLayout.findViewById(R.id.clearAllChat);
+        createNewChat = headerLayout.findViewById(R.id.createNewChat);
+
        /* progressBar = findViewById(R.id.progressBar);*/
     }
 }

@@ -4,26 +4,35 @@
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="4dp"
+    app:cardCornerRadius="8dp"
     app:cardElevation="2dp"
-    app:cardUseCompatPadding="true">
+    app:cardBackgroundColor="#FFE4E4"
+    app:cardUseCompatPadding="true"
+    >
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
         <ImageView
+            android:id="@+id/imageUserOrSystem"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/baseline_account_circle_24"/>
-        <!-- Текстовое поле для вывода результата -->
+            android:src="@drawable/baseline_account_circle_24"
+            android:layout_gravity="center|top"
+            android:layout_marginEnd="16dp" />
+
         <TextView
             android:id="@+id/messageText"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Для вывода CardView на основе данных из базы данных, вам необходимо создать адаптер RecyclerView и настроить его.
 Создайте макет для элемента списка (в данном случае - карточки) в XML-файле. Например, cardview_item.xml:"
             android:gravity="top|start"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
