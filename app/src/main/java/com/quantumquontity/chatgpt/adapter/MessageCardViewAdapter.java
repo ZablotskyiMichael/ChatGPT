@@ -23,8 +23,6 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
     private List<ChatMessageCardView> mDataList;
     private LayoutInflater mInflater;
 
-    private ChatMessageCardView chatMessage3;
-
 
     public MessageCardViewAdapter(Context context, List<ChatMessageCardView> data) {
         this.mInflater = LayoutInflater.from(context);
@@ -81,7 +79,6 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
         TextView messageText;
         CardView cardView;
-
         ImageView imageUserOrSystem;
 
         public ViewHolder(View itemView) {
