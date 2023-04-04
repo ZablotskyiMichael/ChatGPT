@@ -108,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void initChats() {
         LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setReverseLayout(false);
+        llm.setStackFromEnd(true);
         messagesRecyclerView.setLayoutManager(llm);
         messageCardViewAdapter = new MessageCardViewAdapter(this, new ArrayList<>());
         messagesRecyclerView.setAdapter(messageCardViewAdapter);
