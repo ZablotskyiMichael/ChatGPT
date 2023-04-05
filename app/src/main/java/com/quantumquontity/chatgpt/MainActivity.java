@@ -134,7 +134,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void deleteAllChat(View view) {
         chatService.deleteAllChat();
+        navigationView.getMenu().clear();
+        initMenu();
         drawerLayout.closeDrawer(GravityCompat.START);
+        onBackPressed();
     }
 
     private void onStartChatClick(View view) {
@@ -217,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
         for (Chat chat : sortedList) {
             MenuItem menuItem = menu.add(Menu.NONE, (int) chat.getId(), Menu.NONE, chat.getName() + " " + chat.getId());
             menuItem.setIcon(R.drawable.round_message_24);
+
         }
 
         navigationView.setNavigationItemSelectedListener(item -> {
