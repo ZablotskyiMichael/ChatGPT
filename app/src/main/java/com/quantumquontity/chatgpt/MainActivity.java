@@ -11,6 +11,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
@@ -23,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.navigation.NavigationView;
@@ -133,11 +135,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deleteAllChat(View view) {
-        chatService.deleteAllChat();
-        navigationView.getMenu().clear();
-        initMenu();
-        drawerLayout.closeDrawer(GravityCompat.START);
-        onBackPressed();
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle(R.string.deletion_confirmation);
+            builder.setMessage(R.string.question_delete_all_chat);
+            builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+                chatService.deleteAllChat();
+                navigationView.getMenu().clear();
+                initMenu();
+                drawerLayout.closeDrawer(GravityCompat.START);
+                if (subPage == SubPage.CHAT) {
+                    onBackPressed();
+                }
+            });
+            builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
+                dialog.dismiss();
+            });
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+
     }
 
     private void onStartChatClick(View view) {
@@ -218,8 +234,30 @@ public class MainActivity extends AppCompatActivity {
                 .sorted(Comparator.comparingLong(chat -> -chat.getId()))
                 .collect(Collectors.toList());
         for (Chat chat : sortedList) {
-            MenuItem menuItem = menu.add(Menu.NONE, (int) chat.getId(), Menu.NONE, chat.getName() + " " + chat.getId());
-            menuItem.setIcon(R.drawable.round_message_24);
+            MenuItem menuItem = menu.add(Menu.NONE, (int) chat.getId(), Menu.NONE, "");
+            menuItem.setActionView(R.layout.menu_item_layout);
+            ImageView menuIcon = menuItem.getActionView().findViewById(R.id.menu_icon);
+            TextView menuTitle = menuItem.getActionView().findViewById(R.id.menu_title);
+            Button menuButton = menuItem.getActionView().findViewById(R.id.menu_button);
+            menuIcon.setImageResource(R.drawable.round_message_24);
+            menuTitle.setText(chat.getName() + " " + chat.getId());
+            menuButton.setOnClickListener(v -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle(R.string.deletion_confirmation);
+                builder.setMessage(R.string.question_delete_this_chat);
+                builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+                    chatService.deleteChat(chat.getId());
+                    navigationView.getMenu().clear();
+                    initMenu();
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                });
+                builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    dialog.dismiss();
+                });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            });
 
         }
 
