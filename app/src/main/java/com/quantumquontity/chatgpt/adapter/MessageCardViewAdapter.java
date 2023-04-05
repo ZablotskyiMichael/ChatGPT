@@ -71,6 +71,12 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             holder.cardView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
             imageUserOrSystem.setImageResource(R.drawable.icon_system);
         }
+
+        imageUserOrSystem.setLayoutParams(new LinearLayout.LayoutParams(200, 200));
+        imageUserOrSystem.setPadding(0,0,40,0);
+
+        holder.cardWrapper.setPadding(40,40,40,40);
+
         holder.cardWrapper.addView(imageUserOrSystem);
         createText(data.getText(), holder);
     }
