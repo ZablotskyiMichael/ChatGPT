@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="background">#DED2C8</color>
     <color name="iconEnd">#838383</color>
+    <color name="panelCardView">#343541</color>
 </resources>

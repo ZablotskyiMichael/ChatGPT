@@ -156,6 +156,7 @@
             <!-- Текстовое поле для ввода текста -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputMessageLayout"
+                android:layout_gravity="bottom"
                 style="@style/ThemeOverlay.App.TextInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -177,6 +178,7 @@
                 app:hintTextColor="#838383">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:layout_gravity="bottom"
                     android:id="@+id/inputMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
