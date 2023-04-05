@@ -16,21 +16,21 @@
         android:layout_margin="4dp"
         android:padding="8dp">
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/clearAllChats"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"/>
+
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="28dp"
             android:layout_height="24dp"
             app:srcCompat="@drawable/icon_delete"
             />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:text="Clear all chat"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"/>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/createNewChat"
