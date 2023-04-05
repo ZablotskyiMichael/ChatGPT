@@ -1,13 +1,18 @@
 package com.quantumquontity.chatgpt.adapter;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,25 +64,57 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.cardWrapper.removeAllViews();
-        LinearLayout linearLayout = new LinearLayout(context);
-        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        RelativeLayout linearLayout = new RelativeLayout(context);
         ChatMessageCardView data = mDataList.get(position);
         ImageView imageUserOrSystem = new ImageView(context);
+        ImageView imageCopyMessage = new ImageView(context);
+        TextView nameUserOrSystem = new TextView(context);
+        nameUserOrSystem.setTextColor(Color.BLACK);
+        nameUserOrSystem.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         if(data.getUserRole().equals("user")){
             holder.cardView.setCardBackgroundColor(Color.parseColor("#F4EDE7"));
-            imageUserOrSystem.setImageResource(android.R.drawable.ic_menu_help);
+            imageUserOrSystem.setImageResource(R.drawable.user_icon);
+            nameUserOrSystem.setText("You");
         }
         if(data.getUserRole().equals("system")){
             holder.cardView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
             imageUserOrSystem.setImageResource(R.drawable.icon_system);
+            imageCopyMessage.setImageResource(R.drawable.image_button_copy);
+            nameUserOrSystem.setText("CatGPT");
         }
 
-        imageUserOrSystem.setLayoutParams(new LinearLayout.LayoutParams(200, 200));
+        RelativeLayout.LayoutParams layoutParams1 =  new RelativeLayout.LayoutParams(150,150);
+        layoutParams1.addRule(RelativeLayout.ALIGN_PARENT_START);
+        imageUserOrSystem.setLayoutParams(layoutParams1);
         imageUserOrSystem.setPadding(0,0,40,0);
 
-        holder.cardWrapper.setPadding(40,40,40,40);
+        RelativeLayout.LayoutParams layoutParams2 =  new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams2.addRule(RelativeLayout.CENTER_VERTICAL);
+        layoutParams2.addRule(RelativeLayout.CENTER_IN_PARENT);
+        nameUserOrSystem.setLayoutParams(layoutParams2);
+        nameUserOrSystem.setPadding(0,0,40,0);
 
-        holder.cardWrapper.addView(imageUserOrSystem);
+        RelativeLayout.LayoutParams layoutParams3 =  new RelativeLayout.LayoutParams(100,100);
+        layoutParams3.addRule(RelativeLayout.ALIGN_PARENT_END);
+        imageCopyMessage.setLayoutParams(layoutParams3);
+        imageCopyMessage.setPadding(0,0,40,0);
+        imageCopyMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "Message copied", Toast.LENGTH_SHORT).show();
+                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clipData = ClipData.newPlainText("label", data.getText());
+                clipboard.setPrimaryClip(clipData);
+            }
+        });
+
+        linearLayout.addView(imageUserOrSystem);
+        linearLayout.addView(nameUserOrSystem);
+        linearLayout.addView(imageCopyMessage);
+
+        holder.cardWrapper.setPadding(30,30,30,30);
+
+        holder.cardWrapper.addView(linearLayout);
         createText(data.getText(), holder);
     }
 

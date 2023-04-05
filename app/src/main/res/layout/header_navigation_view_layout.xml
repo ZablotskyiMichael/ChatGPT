@@ -58,4 +58,37 @@
             android:textColor="#FFFFFF"
             android:textSize="16sp"/>
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/createNewChat2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="@drawable/background_add_new_chat"
+        android:padding="4dp">
+
+        <ImageView
+            android:id="@+id/imageAddNewChat2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@android:drawable/ic_input_add"
+            />
+
+        <TextView
+            android:id="@+id/addNewChat2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/new_chat"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:layout_gravity="center"/>
+        <ImageView
+            android:id="@+id/imageAddNewChat3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@android:drawable/ic_input_add"
+            android:layout_gravity="end"/>
+    </LinearLayout>
+
 </LinearLayout>
