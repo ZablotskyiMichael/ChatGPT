@@ -5,4 +5,9 @@
     <string name="navigation_drawer_close">Navigation drawer close</string>
     <string name="new_chat">New Chat</string>
     <string name="errorExecuteRequest">Something went wrong</string>
+    <string name="deletion_confirmation">Deletion confirmation</string>
+    <string name="question_delete_this_chat">Are you sure you want to delete this chat?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="question_delete_all_chat">Are you sure you want to delete all chat?</string>
 </resources>
