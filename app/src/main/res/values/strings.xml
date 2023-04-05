@@ -12,4 +12,7 @@
     <string name="question_delete_all_chat">Are you sure you want to delete all chat?</string>
     <string name="clearAllChats">Clear all chats</string>
     <string name="copy_code">Copy code</string>
+    <string name="messageCopied">Message copied</string>
+    <string name="cat_gtp">CatGPT</string>
+    <string name="you">You</string>
 </resources>

@@ -75,13 +75,13 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         if(data.getUserRole().equals("user")){
             holder.cardView.setCardBackgroundColor(Color.parseColor("#F4EDE7"));
             imageUserOrSystem.setImageResource(R.drawable.user_icon);
-            nameUserOrSystem.setText("You");
+            nameUserOrSystem.setText(R.string.you);
         }
         if(data.getUserRole().equals("system")){
             holder.cardView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
             imageUserOrSystem.setImageResource(R.drawable.icon_system);
             imageCopyMessage.setImageResource(R.drawable.image_button_copy);
-            nameUserOrSystem.setText("CatGPT");
+            nameUserOrSystem.setText(R.string.cat_gtp);
         }
 
         RelativeLayout.LayoutParams layoutParams1 =  new RelativeLayout.LayoutParams(150,150);
@@ -98,15 +98,13 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         RelativeLayout.LayoutParams layoutParams3 =  new RelativeLayout.LayoutParams(100,100);
         layoutParams3.addRule(RelativeLayout.ALIGN_PARENT_END);
         imageCopyMessage.setLayoutParams(layoutParams3);
+
         imageCopyMessage.setPadding(0,0,40,0);
-        imageCopyMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "Message copied", Toast.LENGTH_SHORT).show();
-                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData = ClipData.newPlainText("label", data.getText());
-                clipboard.setPrimaryClip(clipData);
-            }
+        imageCopyMessage.setOnClickListener(v -> {
+            Toast.makeText(context, context.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
+            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText("label", data.getText());
+            clipboard.setPrimaryClip(clipData);
         });
 
         linearLayout.addView(imageUserOrSystem);
@@ -170,7 +168,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
                 code.substring(firstLineEnd > 0 ? firstLineEnd + 1 : 0, textStart) :
                 firstLineEnd > 0 ? code.substring(firstLineEnd + 1) : code;
         textCopyMessage.setOnClickListener(v -> {
-            Toast.makeText(context, "Message copied", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
             ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clipData = ClipData.newPlainText("label", currentCode);
             clipboard.setPrimaryClip(clipData);
@@ -184,7 +182,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         textCopyMessage.setLayoutParams(layoutParamsTextCopy);
 
         imageCopyMessage.setOnClickListener(v -> {
-            Toast.makeText(context, "Message copied", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
             ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clipData = ClipData.newPlainText("label", currentCode);
             clipboard.setPrimaryClip(clipData);
@@ -195,7 +193,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
         cardView.setCardBackgroundColor(context.getResources().getColor(R.color.black));
         TextView textView = new TextView(context);
-        textView.setPadding(8,40,8,8);
+        textView.setPadding(16,40,8,8);
         textView.setTextColor(context.getResources().getColor(R.color.white));
         textView.setText(currentCode);
         textView.setTextSize(16);
