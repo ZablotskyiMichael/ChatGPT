@@ -75,13 +75,13 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         if(data.getUserRole().equals("user")){
             holder.cardView.setCardBackgroundColor(Color.parseColor("#F4EDE7"));
             imageUserOrSystem.setImageResource(R.drawable.user_icon);
-            nameUserOrSystem.setText("You");
+            nameUserOrSystem.setText(R.string.you);
         }
         if(data.getUserRole().equals("system")){
             holder.cardView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
             imageUserOrSystem.setImageResource(R.drawable.icon_system);
             imageCopyMessage.setImageResource(R.drawable.image_button_copy);
-            nameUserOrSystem.setText("CatGPT");
+            nameUserOrSystem.setText(R.string.cat_gtp);
         }
 
         RelativeLayout.LayoutParams layoutParams1 =  new RelativeLayout.LayoutParams(150,150);
@@ -98,15 +98,13 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         RelativeLayout.LayoutParams layoutParams3 =  new RelativeLayout.LayoutParams(100,100);
         layoutParams3.addRule(RelativeLayout.ALIGN_PARENT_END);
         imageCopyMessage.setLayoutParams(layoutParams3);
+
         imageCopyMessage.setPadding(0,0,40,0);
-        imageCopyMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "Message copied", Toast.LENGTH_SHORT).show();
-                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData = ClipData.newPlainText("label", data.getText());
-                clipboard.setPrimaryClip(clipData);
-            }
+        imageCopyMessage.setOnClickListener(v -> {
+            Toast.makeText(context, context.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
+            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText("label", data.getText());
+            clipboard.setPrimaryClip(clipData);
         });
 
         linearLayout.addView(imageUserOrSystem);
@@ -147,11 +145,12 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
         imageCopyMessage.setImageResource(R.drawable.image_button_copy);
         relativeLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.panelCardView));
-        textCopyMessage.setText("Copy code");
+        textCopyMessage.setText(R.string.copy_code);
         textCopyMessage.setTextColor(Color.parseColor("#d9d9e3"));
 
-        //Сюда вставить текст языка на котором написан код
-        textProgramingLanguage.setText("Java");
+        // Текст языка на котором написан код
+        int firstLineEnd = code.indexOf("\n");
+        textProgramingLanguage.setText(firstLineEnd > -1 ? code.substring(0, firstLineEnd) : "");
         textProgramingLanguage.setTextColor(Color.parseColor("#d9d9e3"));
 
         RelativeLayout.LayoutParams layoutParamsLanguage =  new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,100);
@@ -164,29 +163,29 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         layoutParamsImageCopy.addRule(RelativeLayout.ALIGN_PARENT_END);
         imageCopyMessage.setPadding(20,20,20,20);
         imageCopyMessage.setLayoutParams(layoutParamsImageCopy);
-        textCopyMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "Message copied", Toast.LENGTH_SHORT).show();
-                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData = ClipData.newPlainText("label", textStart > 0 ? code.substring(0, textStart) : code);
-                clipboard.setPrimaryClip(clipData);
-            }
+
+        String currentCode = textStart > 0 ?
+                code.substring(firstLineEnd > 0 ? firstLineEnd + 1 : 0, textStart) :
+                firstLineEnd > 0 ? code.substring(firstLineEnd + 1) : code;
+        textCopyMessage.setOnClickListener(v -> {
+            Toast.makeText(context, context.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
+            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText("label", currentCode);
+            clipboard.setPrimaryClip(clipData);
         });
+
         relativeLayout.addView(imageCopyMessage);
 
         RelativeLayout.LayoutParams layoutParamsTextCopy =  new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,100);
         layoutParamsTextCopy.addRule(RelativeLayout.ALIGN_PARENT_END);
         textCopyMessage.setPadding(0,20,120,20);
         textCopyMessage.setLayoutParams(layoutParamsTextCopy);
-        imageCopyMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "Message copied", Toast.LENGTH_SHORT).show();
-                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData = ClipData.newPlainText("label", textStart > 0 ? code.substring(0, textStart) : code);
-                clipboard.setPrimaryClip(clipData);
-            }
+
+        imageCopyMessage.setOnClickListener(v -> {
+            Toast.makeText(context, context.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
+            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText("label", currentCode);
+            clipboard.setPrimaryClip(clipData);
         });
 
         relativeLayout.addView(textCopyMessage);
@@ -194,9 +193,9 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
         cardView.setCardBackgroundColor(context.getResources().getColor(R.color.black));
         TextView textView = new TextView(context);
-        textView.setPadding(8,40,8,8);
+        textView.setPadding(16,40,8,8);
         textView.setTextColor(context.getResources().getColor(R.color.white));
-        textView.setText(textStart > 0 ? code.substring(0, textStart) : code);
+        textView.setText(currentCode);
         textView.setTextSize(16);
         cardView.addView(textView);
         holder.cardWrapper.addView(cardView);

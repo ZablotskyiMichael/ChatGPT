@@ -431,7 +431,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onResponse(ChatCompletionChunk chatCompletionChunk) {
-        System.out.println(chatCompletionChunk.toString());
         for (ChatCompletionChoice choice : chatCompletionChunk.getChoices()) {
             ChatMessage message = choice.getMessage();
             if (message != null) {
