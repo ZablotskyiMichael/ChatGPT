@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
@@ -59,7 +60,15 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String SHARED_PREF_TOKEN = "Token";
 
+    /**
+     * RКоличество токенов при первом входе в приложение
+     */
+    private static final Integer SHARED_PREF_TOKEN_QUANTITY_FIRST_LAUNCH = 10;
+
+    private static final String SHARED_PREF_LAUNCH = "Launch";
+    private static final String SHARED_PREF_FIRST_LAUNCH = "firstLaunch";
     private static final String TOKEN = "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";
     private static final String MODEL_TYPE = "gpt-3.5-turbo";
 
@@ -68,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private DBHelper dbHelper;
 
+    private SharedPreferences prefSettingsConfig;
     private ChatService chatService;
     private ChatMessageService chatMessageService;
     private ImageView catLogoImageView;
@@ -86,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout clearAllChat;
     private LinearLayout createNewChat;
     private ActionBarDrawerToggle drawerToggle;
+    private TextView quantityToken;
+    private Button startShowADS;
 
     /**
      * Вспомогательный класс чтоб понять где мы сейчас.
@@ -102,8 +114,27 @@ public class MainActivity extends AppCompatActivity {
         initServices();
         initData();
         senOnClickListeners();
-    }
+        processFirstLaunch();
+        }
 
+    private void processFirstLaunch() {
+        if (isFirstLaunch()) {
+            prefSettingsConfig = getSharedPreferences(SHARED_PREF_LAUNCH, MODE_PRIVATE);
+
+            SharedPreferences.Editor editor = prefSettingsConfig.edit();
+            editor.putBoolean(SHARED_PREF_FIRST_LAUNCH, false);
+            editor.putInt(SHARED_PREF_TOKEN, SHARED_PREF_TOKEN_QUANTITY_FIRST_LAUNCH);
+            editor.apply();
+            quantityToken.setText(String.valueOf(SHARED_PREF_TOKEN_QUANTITY_FIRST_LAUNCH));
+        }else{
+            int currentValue = prefSettingsConfig.getInt(SHARED_PREF_TOKEN, 0);
+            quantityToken.setText(String.valueOf(currentValue));
+        }
+    }
+    public boolean isFirstLaunch() {
+        prefSettingsConfig = getSharedPreferences(SHARED_PREF_LAUNCH, MODE_PRIVATE);
+        return prefSettingsConfig.getBoolean(SHARED_PREF_FIRST_LAUNCH, true);
+    }
     private void initData() {
         initChats();
     }
@@ -121,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new DBHelper(this);
         chatService = new ChatService(new ChatDao(dbHelper));
         chatMessageService = new ChatMessageService(new ChatMessageDao(dbHelper));
+
     }
 
     private void senOnClickListeners() {
@@ -128,9 +160,23 @@ public class MainActivity extends AppCompatActivity {
         initChatsOnClickListeners();
         startChatButton.setOnClickListener(this::onStartChatClick);
 
+        startShowADS.setOnClickListener(this::showADdsAndGetToken);
 
         clearAllChat.setOnClickListener(this::deleteAllChat);
         createNewChat.setOnClickListener(this::onStartChatClick);
+
+    }
+
+    private void showADdsAndGetToken(View view) {
+        //Реализовать метод просмотра рекланого ролика
+
+        int currentValue = prefSettingsConfig.getInt(SHARED_PREF_TOKEN, 0);
+        currentValue++;
+        SharedPreferences.Editor editor = prefSettingsConfig.edit();
+
+        editor.putInt(SHARED_PREF_TOKEN, currentValue);
+        editor.apply();
+        quantityToken.setText(String.valueOf(currentValue));
 
     }
 
@@ -294,6 +340,15 @@ public class MainActivity extends AppCompatActivity {
             // кинуть ошибку
             return;
         }
+
+        int currentValue = prefSettingsConfig.getInt(SHARED_PREF_TOKEN, 0);
+        currentValue--;
+        SharedPreferences.Editor editor = prefSettingsConfig.edit();
+        editor.putInt(SHARED_PREF_TOKEN, currentValue);
+        editor.apply();
+        quantityToken.setText(String.valueOf(currentValue));
+
+
         // Заменить endIcon на иконку с анимацией загрузки
         inputMessageLayout.setEndIconDrawable(R.drawable.circular_loading);
         Drawable drawable = inputMessageLayout.getEndIconDrawable();
@@ -419,6 +474,8 @@ public class MainActivity extends AppCompatActivity {
         View headerLayout = navigationView.getHeaderView(0);
         clearAllChat = headerLayout.findViewById(R.id.clearAllChat);
         createNewChat = headerLayout.findViewById(R.id.createNewChat);
+        startShowADS = findViewById(R.id.startShowADS);
+        quantityToken = findViewById(R.id.quantityToken);
 
         /* progressBar = findViewById(R.id.progressBar);*/
     }
