@@ -74,7 +74,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         nameUserOrSystem.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         if(data.getUserRole().equals("user")){
             holder.cardView.setCardBackgroundColor(Color.parseColor("#F4EDE7"));
-            imageUserOrSystem.setImageResource(R.drawable.user_icon);
+            imageUserOrSystem.setImageResource(R.drawable.user);
             nameUserOrSystem.setText(R.string.you);
         }
         if(data.getUserRole().equals("system")){
