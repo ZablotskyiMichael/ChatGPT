@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle drawerToggle;
     private TextView quantityToken;
     private Button startShowADS;
+    private Button buyPremiumChatButton;
 
     /**
      * Вспомогательный класс чтоб понять где мы сейчас.
@@ -217,6 +219,15 @@ public class MainActivity extends AppCompatActivity {
 
         clearAllChat.setOnClickListener(this::deleteAllChat);
         createNewChat.setOnClickListener(this::onStartChatClick);
+
+        buyPremiumChatButton.setOnClickListener(this::openSubscribePage);
+
+    }
+
+    private void openSubscribePage(View view) {
+        final Dialog dialog = new Dialog(MainActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.subscribe_page);
+        dialog.show();
 
     }
 
@@ -542,6 +553,7 @@ public class MainActivity extends AppCompatActivity {
         createNewChat = headerLayout.findViewById(R.id.createNewChat);
         startShowADS = findViewById(R.id.startShowADS);
         quantityToken = findViewById(R.id.quantityToken);
+        buyPremiumChatButton = findViewById(R.id.buyPremiumChatButton);
 
         /* progressBar = findViewById(R.id.progressBar);*/
     }

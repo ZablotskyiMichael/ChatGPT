@@ -31,7 +31,6 @@
                 android:visibility="invisible"
                 android:src="@drawable/menu_icon"
                 android:elevation="2dp"
-                android:outlineAmbientShadowColor="@color/black"
                 />
             <TextView
                 android:layout_marginTop="8dp"
