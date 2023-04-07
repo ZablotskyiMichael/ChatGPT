@@ -201,7 +201,6 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputMessageLayout"
                 android:layout_gravity="bottom"
-                style="@style/ThemeOverlay.App.TextInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -209,17 +208,13 @@
                 android:textColorHint="@color/black"
                 app:endIconMode="custom"
                 app:endIconDrawable="@drawable/baseline_send_24"
-                app:endIconTint="#838383"
                 app:errorEnabled="true"
                 android:visibility="gone"
-                app:boxStrokeColor="#C1B8B0"
                 app:boxCornerRadiusBottomEnd="15dp"
                 app:boxCornerRadiusTopStart="15dp"
                 app:boxCornerRadiusTopEnd="15dp"
                 app:boxCornerRadiusBottomStart="15dp"
-                app:boxBackgroundColor="#F4EDE7"
-                app:boxStrokeWidth="0.2dp"
-                app:hintTextColor="#838383">
+                app:boxStrokeWidth="0.2dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_gravity="bottom"
