@@ -395,8 +395,10 @@ public class MainActivity extends AppCompatActivity {
                 service.executeChatCompletion(chatCompletionRequest, this::onResponse);
             } catch (Exception e) {
                 runOnUiThread(() -> {
-                    currentChatMessage.setText(e.getMessage());
+                    // TODO вернуть балл на счет?
+                    currentChatMessage.setText(getString(R.string.unknown_error));
                     messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
+                    enableInput();
                 });
             }
         }).start();
@@ -445,16 +447,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // После завершения загрузки снова включить возможность ввода в inputMessageLayout и скрыть ProgressBar
-        runOnUiThread(() -> {
-            if (inputMessage.getText().toString().isEmpty()) {
-                inputMessage.setEnabled(true);
-            }
-            /*progressBar.hide();*/
-            // Восстановить endIcon
-            inputMessageLayout.setEndIconDrawable(R.drawable.baseline_send_24);
-            inputMessageLayout.setEndIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.iconEnd)));
-        });
+        runOnUiThread(this::enableInput);
         chatMessageService.updateChatMessageText(currentChatMessage.getId(), currentChatMessage.getText());
+    }
+
+    private void enableInput(){
+        if (inputMessage.getText().toString().isEmpty()) {
+            inputMessage.setEnabled(true);
+        }
+        /*progressBar.hide();*/
+        // Восстановить endIcon
+        inputMessageLayout.setEndIconDrawable(R.drawable.baseline_send_24);
+        inputMessageLayout.setEndIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.iconEnd)));
     }
 
     private void findElement() {

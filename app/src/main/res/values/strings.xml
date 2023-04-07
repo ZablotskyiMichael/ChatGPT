@@ -15,4 +15,5 @@
     <string name="messageCopied">Message copied</string>
     <string name="cat_gtp">CatGPT</string>
     <string name="you">You</string>
+    <string name="unknown_error">Oops... An unknown error has occurred.</string>
 </resources>
