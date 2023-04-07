@@ -41,6 +41,7 @@ import com.quantumquontity.chatgpt.dict.SubPage;
 import com.quantumquontity.chatgpt.dto.ChatMessageCardView;
 import com.quantumquontity.chatgpt.service.ChatMessageService;
 import com.quantumquontity.chatgpt.service.ChatService;
+import com.quantumquontity.chatgpt.service.PointService;
 import com.theokanning.openai.OpenAiApi;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionChunk;
@@ -60,15 +61,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String SHARED_PREF_TOKEN = "Token";
 
-    /**
-     * RКоличество токенов при первом входе в приложение
-     */
-    private static final Integer SHARED_PREF_TOKEN_QUANTITY_FIRST_LAUNCH = 10;
-
-    private static final String SHARED_PREF_LAUNCH = "Launch";
-    private static final String SHARED_PREF_FIRST_LAUNCH = "firstLaunch";
     private static final String TOKEN = "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";
     private static final String MODEL_TYPE = "gpt-3.5-turbo";
 
@@ -76,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
      * Вспомогательный класс для работы с БД
      */
     private DBHelper dbHelper;
+
+    private PointService pointService;
 
     private SharedPreferences prefSettingsConfig;
     private ChatService chatService;
@@ -104,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private SubPage subPage = SubPage.MAIN;
     private long currentChatId = -1;
+    private int currentPoints = 0;
     private com.quantumquontity.chatgpt.data.ChatMessage currentChatMessage = null;
 
     @Override
@@ -114,29 +110,20 @@ public class MainActivity extends AppCompatActivity {
         initServices();
         initData();
         senOnClickListeners();
-        processFirstLaunch();
         }
 
-    private void processFirstLaunch() {
-        if (isFirstLaunch()) {
-            prefSettingsConfig = getSharedPreferences(SHARED_PREF_LAUNCH, MODE_PRIVATE);
-
-            SharedPreferences.Editor editor = prefSettingsConfig.edit();
-            editor.putBoolean(SHARED_PREF_FIRST_LAUNCH, false);
-            editor.putInt(SHARED_PREF_TOKEN, SHARED_PREF_TOKEN_QUANTITY_FIRST_LAUNCH);
-            editor.apply();
-            quantityToken.setText(String.valueOf(SHARED_PREF_TOKEN_QUANTITY_FIRST_LAUNCH));
-        }else{
-            int currentValue = prefSettingsConfig.getInt(SHARED_PREF_TOKEN, 0);
-            quantityToken.setText(String.valueOf(currentValue));
-        }
-    }
-    public boolean isFirstLaunch() {
-        prefSettingsConfig = getSharedPreferences(SHARED_PREF_LAUNCH, MODE_PRIVATE);
-        return prefSettingsConfig.getBoolean(SHARED_PREF_FIRST_LAUNCH, true);
-    }
     private void initData() {
         initChats();
+        initPoints();
+    }
+
+    private void initPoints() {
+        if(isInfinityPoints()){
+            quantityToken.setText(String.valueOf('\u221E'));
+        } else {
+            currentPoints = pointService.getCurrentPoints();
+            quantityToken.setText(String.valueOf(currentPoints));
+        }
     }
 
     private void initChats() {
@@ -152,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new DBHelper(this);
         chatService = new ChatService(new ChatDao(dbHelper));
         chatMessageService = new ChatMessageService(new ChatMessageDao(dbHelper));
-
+        pointService = new PointService(this);
     }
 
     private void senOnClickListeners() {
@@ -160,23 +147,19 @@ public class MainActivity extends AppCompatActivity {
         initChatsOnClickListeners();
         startChatButton.setOnClickListener(this::onStartChatClick);
 
-        startShowADS.setOnClickListener(this::showADdsAndGetToken);
+        startShowADS.setOnClickListener(this::showADsAndGetPoint);
 
         clearAllChat.setOnClickListener(this::deleteAllChat);
         createNewChat.setOnClickListener(this::onStartChatClick);
 
     }
 
-    private void showADdsAndGetToken(View view) {
+    private void showADsAndGetPoint(View view) {
         //Реализовать метод просмотра рекланого ролика
 
-        int currentValue = prefSettingsConfig.getInt(SHARED_PREF_TOKEN, 0);
-        currentValue++;
-        SharedPreferences.Editor editor = prefSettingsConfig.edit();
-
-        editor.putInt(SHARED_PREF_TOKEN, currentValue);
-        editor.apply();
-        quantityToken.setText(String.valueOf(currentValue));
+        currentPoints++;
+        pointService.updatePoints(currentPoints);
+        quantityToken.setText(String.valueOf(currentPoints));
 
     }
 
@@ -341,67 +324,71 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        int currentValue = prefSettingsConfig.getInt(SHARED_PREF_TOKEN, 0);
-        currentValue--;
-        SharedPreferences.Editor editor = prefSettingsConfig.edit();
-        editor.putInt(SHARED_PREF_TOKEN, currentValue);
-        editor.apply();
-        quantityToken.setText(String.valueOf(currentValue));
+        if(currentPoints > 0 || isInfinityPoints()){
+            if(!isInfinityPoints()){
+                currentPoints--;
+                pointService.updatePoints(currentPoints);
+                quantityToken.setText(String.valueOf(currentPoints));
+            }
 
+            // Заменить endIcon на иконку с анимацией загрузки
+            inputMessageLayout.setEndIconDrawable(R.drawable.circular_loading);
+            Drawable drawable = inputMessageLayout.getEndIconDrawable();
+            if (drawable instanceof Animatable) {
+                ((Animatable) drawable).start();
+            }
 
-        // Заменить endIcon на иконку с анимацией загрузки
-        inputMessageLayout.setEndIconDrawable(R.drawable.circular_loading);
-        Drawable drawable = inputMessageLayout.getEndIconDrawable();
-        if (drawable instanceof Animatable) {
-            ((Animatable) drawable).start();
-        }
+            // Отключить возможность ввода в inputMessage
+            if (inputMessage.getText() != null) {
+                inputMessage.setEnabled(false);
+            }
 
-        // Отключить возможность ввода в inputMessage
-        if (inputMessage.getText() != null) {
-            inputMessage.setEnabled(false);
-        }
-
-        // Включить ProgressBar и выполнить действия по загрузке
+            // Включить ProgressBar и выполнить действия по загрузке
        /* progressBar.setVisibility(View.VISIBLE);
         progressBar.show();*/
 
-        // выполнить действия по загрузке, отправку данных на сервер ИИ
+            // выполнить действия по загрузке, отправку данных на сервер ИИ
 
-        String requestMessage = inputMessage.getText().toString();
-        inputMessage.setText("");
+            String requestMessage = inputMessage.getText().toString();
+            inputMessage.setText("");
 
-        createAndSaveChatMessage(requestMessage, ChatMessageRole.USER);
-        currentChatMessage = createAndSaveChatMessage("", ChatMessageRole.SYSTEM);
+            createAndSaveChatMessage(requestMessage, ChatMessageRole.USER);
+            currentChatMessage = createAndSaveChatMessage("", ChatMessageRole.SYSTEM);
 
-        ObjectMapper mapper = defaultObjectMapper();
-        OkHttpClient client = defaultClient(TOKEN, Duration.ofSeconds(30));
-        Retrofit retrofit = defaultRetrofit(client, mapper);
+            ObjectMapper mapper = defaultObjectMapper();
+            OkHttpClient client = defaultClient(TOKEN, Duration.ofSeconds(30));
+            Retrofit retrofit = defaultRetrofit(client, mapper);
 
-        OpenAiApi aiApi = retrofit.create(OpenAiApi.class);
-        ExecutorService executorService = client.dispatcher().executorService();
-        OpenAiServiceCustom service = new OpenAiServiceCustom(aiApi, executorService);
-        List<ChatMessage> messages = getChatMessages();
-        ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
-                .builder()
-                .model(MODEL_TYPE)
-                .messages(messages)
-                .n(1)
-                .maxTokens(250)
-                .logitBias(new HashMap<>())
-                .build();
+            OpenAiApi aiApi = retrofit.create(OpenAiApi.class);
+            ExecutorService executorService = client.dispatcher().executorService();
+            OpenAiServiceCustom service = new OpenAiServiceCustom(aiApi, executorService);
+            List<ChatMessage> messages = getChatMessages();
+            ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
+                    .builder()
+                    .model(MODEL_TYPE)
+                    .messages(messages)
+                    .n(1)
+                    .maxTokens(250)
+                    .logitBias(new HashMap<>())
+                    .build();
 
-        new Thread(() -> {
-            try {
-                service.executeChatCompletion(chatCompletionRequest, this::onResponse);
-            } catch (Exception e) {
-                runOnUiThread(() -> {
-                    // TODO вернуть балл на счет?
-                    currentChatMessage.setText(getString(R.string.unknown_error));
-                    messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
-                    enableInput();
-                });
-            }
-        }).start();
+            new Thread(() -> {
+                try {
+                    service.executeChatCompletion(chatCompletionRequest, this::onResponse);
+                } catch (Exception e) {
+                    runOnUiThread(() -> {
+                        // TODO вернуть балл на счет?
+                        currentChatMessage.setText(getString(R.string.unknown_error));
+                        messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
+                        enableInput();
+                    });
+                }
+            }).start();
+        }
+    }
+
+    private boolean isInfinityPoints() {
+        return false; // TODO проверять что там в billing сервисе
     }
 
     /**
