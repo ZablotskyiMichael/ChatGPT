@@ -26,7 +26,7 @@ public class PointService {
     public void updatePoints(int newValue) {
         SharedPreferences prefSettingsConfig = mainActivity.getSharedPreferences(SHARED_PREFERENCES_POINTS, MODE_PRIVATE);
         SharedPreferences.Editor editor = prefSettingsConfig.edit();
-        editor.putInt(SHARED_PREFERENCES_POINTS, newValue);
+        editor.putInt(SHARED_PREF_POINTS_VALUE, newValue);
         editor.apply();
     }
 }
