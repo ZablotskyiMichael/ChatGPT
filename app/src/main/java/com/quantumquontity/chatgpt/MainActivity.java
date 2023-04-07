@@ -4,6 +4,7 @@ import static com.theokanning.openai.service.OpenAiService.defaultClient;
 import static com.theokanning.openai.service.OpenAiService.defaultObjectMapper;
 import static com.theokanning.openai.service.OpenAiService.defaultRetrofit;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -11,12 +12,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,8 +28,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputLayout;
@@ -64,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TOKEN = "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";
     private static final String MODEL_TYPE = "gpt-3.5-turbo";
+    private static final String TAG = "MainActivity";
+    private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
 
     /**
      * Вспомогательный класс для работы с БД
@@ -72,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
 
     private PointService pointService;
 
-    private SharedPreferences prefSettingsConfig;
+    private RewardedAd rewardedAd;
+
     private ChatService chatService;
     private ChatMessageService chatMessageService;
     private ImageView catLogoImageView;
@@ -109,8 +121,62 @@ public class MainActivity extends AppCompatActivity {
         findElement();
         initServices();
         initData();
-        senOnClickListeners();
+        loadAd();
+        setOnClickListeners();
         }
+
+    private void loadAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, AD_UNIT_ID,
+                adRequest, new RewardedAdLoadCallback() {
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error.
+                        Log.d(TAG, loadAdError.toString());
+                        rewardedAd = null;
+                    }
+
+                    @Override
+                    public void onAdLoaded(@NonNull RewardedAd ad) {
+                        rewardedAd = ad;
+                        Log.d(TAG, "Ad was loaded.");
+                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d(TAG, "Ad was clicked.");
+                            }
+
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                // Set the ad reference to null so you don't show the ad a second time.
+                                Log.d(TAG, "Ad dismissed fullscreen content.");
+                                rewardedAd = null;
+                            }
+
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                // Called when ad fails to show.
+                                Log.e(TAG, "Ad failed to show fullscreen content.");
+                                rewardedAd = null;
+                            }
+
+                            @Override
+                            public void onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d(TAG, "Ad recorded an impression.");
+                            }
+
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d(TAG, "Ad showed fullscreen content.");
+                            }
+                        });
+                    }
+                });
+    }
 
     private void initData() {
         initChats();
@@ -142,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
         pointService = new PointService(this);
     }
 
-    private void senOnClickListeners() {
+    private void setOnClickListeners() {
         inputMessageLayout.setEndIconOnClickListener(this::onSendMessage);
         initChatsOnClickListeners();
         startChatButton.setOnClickListener(this::onStartChatClick);
@@ -155,11 +221,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showADsAndGetPoint(View view) {
-        //Реализовать метод просмотра рекланого ролика
-
-        currentPoints++;
-        pointService.updatePoints(currentPoints);
-        quantityToken.setText(String.valueOf(currentPoints));
+        if (rewardedAd != null) {
+            Activity activityContext = MainActivity.this;
+            rewardedAd.show(activityContext, rewardItem -> {
+                // Handle the reward.
+                Log.d(TAG, "The user earned the reward.");
+                int rewardAmount = rewardItem.getAmount();
+                String rewardType = rewardItem.getType();
+                currentPoints++;
+                pointService.updatePoints(currentPoints);
+                quantityToken.setText(String.valueOf(currentPoints));
+            });
+        } else {
+            Toast.makeText(this, getText(R.string.ad_is_not_available), Toast.LENGTH_SHORT).show();
+        }
 
     }
 

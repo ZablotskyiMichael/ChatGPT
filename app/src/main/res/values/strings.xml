@@ -16,4 +16,5 @@
     <string name="cat_gtp">CatGPT</string>
     <string name="you">You</string>
     <string name="unknown_error">Oops... An unknown error has occurred.</string>
+    <string name="ad_is_not_available">Ad viewing is not available. Try later.</string>
 </resources>
