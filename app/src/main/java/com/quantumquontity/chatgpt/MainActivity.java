@@ -231,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
                 currentPoints++;
                 pointService.updatePoints(currentPoints);
                 quantityToken.setText(String.valueOf(currentPoints));
+                loadAd();
             });
         } else {
             Toast.makeText(this, getText(R.string.ad_is_not_available), Toast.LENGTH_SHORT).show();

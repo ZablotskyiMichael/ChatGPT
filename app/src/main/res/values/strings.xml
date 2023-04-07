@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ChatGPT</string>
+    <string name="app_name">CatGPT</string>
     <string name="sendMessage">Send a message...</string>
     <string name="navigation_drawer_open">navigation drawer open</string>
     <string name="navigation_drawer_close">Navigation drawer close</string>
