@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -132,7 +133,10 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
     private void createText(String text, TextView textView, ViewHolder holder) {
         if (text.isEmpty()) {
+            holder.startWrite(context);
             return;
+        } else {
+            holder.stopWrite();
         }
         if (textView == null) {
             int codeStart = text.indexOf(CODE_WRAPPING);
@@ -162,6 +166,8 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
     }
 
     private void createCode(String code, TextView textView, ViewHolder holder) {
+        holder.textNow = false;
+        holder.currentTextOrCodeView = null;
         if (code.isEmpty()) {
             return;
         }
@@ -244,8 +250,6 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
         if (textStart > -1) {
             createText(code.substring(textStart + 3), null, holder);
-        } else {
-            holder.textNow = false;
         }
     }
 
@@ -270,11 +274,50 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
         CardView cardView;
         LinearLayout cardWrapper;
+        boolean catGptIsWriting;
+        TextView catGptIsWriteTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.card_view);
             cardWrapper = itemView.findViewById(R.id.cardWrapper);
+        }
+
+        public void startWrite(Context context){
+            catGptIsWriting = true;
+            catGptIsWriteTextView = new TextView(context);
+            catGptIsWriteTextView.setTextSize(16);
+            cardWrapper.addView(catGptIsWriteTextView);
+            Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+                int count = 0;
+                final String[] texts = {
+                        "",
+                        ".",
+                        "..",
+                        "..."};
+
+                @Override
+                public void run() {
+                    if (catGptIsWriting) {
+                        catGptIsWriteTextView.setText(texts[count]);
+                        count++;
+                        if (count == texts.length) {
+                            count = 0;
+                        }
+                        handler.postDelayed(this, 1000);
+                    }
+                }
+            };
+            handler.postDelayed(runnable, 1000);
+        }
+
+        public void stopWrite(){
+            if(catGptIsWriting){
+                catGptIsWriting = false;
+                cardWrapper.removeView(catGptIsWriteTextView);
+                catGptIsWriteTextView = null;
+            }
         }
     }
 }

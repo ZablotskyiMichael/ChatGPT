@@ -24,4 +24,6 @@
     <string name="cost_unknown">Cost unknown</string>
     <string name="buy_premium">Buy PREMIUM</string>
     <string name="premium">Premium</string>
+    <string name="thinking">thinking</string>
+    <string name="processing">processing</string>
 </resources>

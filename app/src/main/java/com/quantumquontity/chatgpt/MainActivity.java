@@ -517,6 +517,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         // TODO вернуть балл на счет?
                         currentChatMessage.setText(getString(R.string.unknown_error));
+                        System.out.println("Request error: " + e);
                         messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
                         enableInput();
                     });
