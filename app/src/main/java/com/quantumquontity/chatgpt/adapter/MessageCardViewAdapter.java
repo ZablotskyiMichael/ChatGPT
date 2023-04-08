@@ -305,11 +305,11 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
                         if (count == texts.length) {
                             count = 0;
                         }
-                        handler.postDelayed(this, 1000);
+                        handler.postDelayed(this, 500);
                     }
                 }
             };
-            handler.postDelayed(runnable, 1000);
+            handler.postDelayed(runnable, 500);
         }
 
         public void stopWrite(){

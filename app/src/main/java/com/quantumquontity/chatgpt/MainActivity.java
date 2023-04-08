@@ -466,12 +466,7 @@ public class MainActivity extends AppCompatActivity {
                 quantityToken.setText(String.valueOf(currentPoints));
             }
 
-            // Заменить endIcon на иконку с анимацией загрузки
-            inputMessageLayout.setEndIconDrawable(R.drawable.circular_loading);
-            Drawable drawable = inputMessageLayout.getEndIconDrawable();
-            if (drawable instanceof Animatable) {
-                ((Animatable) drawable).start();
-            }
+            inputMessageLayout.setEndIconOnClickListener(null);
 
             // Отключить возможность ввода в inputMessage
             if (inputMessage.getText() != null) {
@@ -592,6 +587,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void enableInput(){
+        inputMessageLayout.setEndIconOnClickListener(this::onSendMessage);
         if (inputMessage.getText().toString().isEmpty()) {
             inputMessage.setEnabled(true);
         }
