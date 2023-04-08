@@ -30,25 +30,37 @@ public class OpenAiServiceCustom extends OpenAiService {
         this.api = api;
     }
 
-    public void executeChatCompletion(ChatCompletionRequest request, Consumer<ChatCompletionChunk> consumer) throws IOException {
+    public void executeChatCompletion(
+            ChatCompletionRequest request,
+            Consumer<ChatCompletionChunk> consumer,
+            Runnable finalRunnable) throws IOException {
         request.setStream(true);
-        executeChatCompletion(api.createChatCompletionStream(request), consumer);
+        executeChatCompletion(
+                api.createChatCompletionStream(request),
+                consumer,
+                finalRunnable
+        );
     }
 
-    public void executeChatCompletion(Call<ResponseBody> apiCall, Consumer<ChatCompletionChunk> consumer) throws IOException {
+    public void executeChatCompletion(
+            Call<ResponseBody> apiCall,
+            Consumer<ChatCompletionChunk> consumer,
+            Runnable finalRunnable
+    ) throws IOException {
         Response<ResponseBody> response = apiCall.execute();
         if (response.isSuccessful()) {
             parseSse(response, consumer);
+            finalRunnable.run();
         } else {
             throw new IOException("Request error: " + response.code() + " " + response.message());
         }
     }
 
     public void parseSse(Response<ResponseBody> response, Consumer<ChatCompletionChunk> consumer) {
-        BufferedReader reader = null;
-        try {
-            InputStream in = response.body().byteStream();
-            reader = new BufferedReader(new InputStreamReader(in));
+        try (
+                InputStream in = response.body().byteStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in))
+        ) {
             String line;
             SSE sse = null;
             while ((line = reader.readLine()) != null) {

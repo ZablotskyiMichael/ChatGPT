@@ -509,7 +509,10 @@ public class MainActivity extends AppCompatActivity {
 
             new Thread(() -> {
                 try {
-                    service.executeChatCompletion(chatCompletionRequest, this::onResponse);
+                    service.executeChatCompletion(chatCompletionRequest,
+                            this::onResponse,
+                            () -> // После завершения загрузки снова включить возможность ввода в inputMessageLayout и скрыть ProgressBar
+                                    runOnUiThread(this::enableInput));
                 } catch (Exception e) {
                     runOnUiThread(() -> {
                         // TODO вернуть балл на счет?
@@ -579,14 +582,11 @@ public class MainActivity extends AppCompatActivity {
                 if (content != null) {
                     runOnUiThread(() -> {
                         currentChatMessage.setText(currentChatMessage.getText() + content);
-                        messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
+                        messageCardViewAdapter.updateLastItemText(content);
                     });
                 }
             }
         }
-
-        // После завершения загрузки снова включить возможность ввода в inputMessageLayout и скрыть ProgressBar
-        runOnUiThread(this::enableInput);
         chatMessageService.updateChatMessageText(currentChatMessage.getId(), currentChatMessage.getText());
     }
 
