@@ -71,6 +71,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
     // Связываем данные с элементом списка (карточкой)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.currentTextOrCodeView = null;
         ChatMessageCardView data = mDataList.get(position);
         holder.cardWrapper.removeAllViews();
         initNewItem(holder, data);
