@@ -226,6 +226,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     android:layout_weight="1"
+                    android:maxLength="500"
                     android:hint="@string/sendMessage"
                     android:inputType="text"
                     android:textColor="#424242"
