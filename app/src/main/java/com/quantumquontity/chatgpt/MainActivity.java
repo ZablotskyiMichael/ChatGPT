@@ -63,6 +63,7 @@ import com.theokanning.openai.completion.chat.ChatMessageRole;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -496,13 +497,13 @@ public class MainActivity extends AppCompatActivity {
             OpenAiApi aiApi = retrofit.create(OpenAiApi.class);
             ExecutorService executorService = client.dispatcher().executorService();
             OpenAiServiceCustom service = new OpenAiServiceCustom(aiApi, executorService);
-            List<ChatMessage> messages = getChatMessages();
+            List<ChatMessage> messages = getLastChatMessages();
             ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
                     .builder()
                     .model(MODEL_TYPE)
                     .messages(messages)
                     .n(1)
-                    .maxTokens(250)
+                    .maxTokens(500)
                     .logitBias(new HashMap<>())
                     .build();
 
@@ -528,12 +529,29 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Собирает историю переписки для отправки в chatGPT.
      */
-    private List<ChatMessage> getChatMessages() {
-        return chatMessageService.getChatMessagesList(currentChatId)
+    private List<ChatMessage> getLastChatMessages() {
+        List<ChatMessage> messages = chatMessageService.getChatMessagesList(currentChatId)
                 .stream()
                 .filter(message -> !message.getText().isEmpty())
                 .map(message -> new ChatMessage(message.getUserRole(), message.getText()))
                 .collect(Collectors.toList());
+
+        int maxLength = 2000;
+        int totalLength = 0;
+        List<ChatMessage> lastMessages = new ArrayList<>();
+
+        for (int i = messages.size() - 1; i >= 0; i--) {
+            ChatMessage message = messages.get(i);
+            if (totalLength + message.getContent().length() <= maxLength) {
+                lastMessages.add(message);
+                totalLength += message.getContent().length();
+            } else {
+                break;
+            }
+        }
+
+        Collections.reverse(lastMessages);
+        return lastMessages;
     }
 
     private com.quantumquontity.chatgpt.data.ChatMessage createAndSaveChatMessage(String requestMessage, ChatMessageRole role) {
