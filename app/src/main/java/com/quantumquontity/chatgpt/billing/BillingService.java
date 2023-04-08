@@ -2,6 +2,8 @@ package com.quantumquontity.chatgpt.billing;
 
 import androidx.annotation.NonNull;
 
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
@@ -40,12 +42,9 @@ public class BillingService {
         if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK
                 && purchases != null) {
             for (Purchase purchase : purchases) {
-                payedProducts.addAll(purchase.getProducts());
-//                    handlePurchase(purchase);
+                handlePurchase(purchase);
             }
-            if(isPremium()){
-                mainActivity.runOnUiThread(() -> mainActivity.onExistPremium());
-            }
+
         } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
             // Handle an error caused by a user cancelling the purchase flow.
         } else {
@@ -113,7 +112,7 @@ public class BillingService {
         queryPurchasesAsync(onExistPremium);
     }
 
-    private QueryProductDetailsParams.Product buildQueryProduct(String productId){
+    private QueryProductDetailsParams.Product buildQueryProduct(String productId) {
         return QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(productId)
                 .setProductType(BillingClient.ProductType.SUBS)
@@ -133,7 +132,7 @@ public class BillingService {
                             payedProducts.addAll(purchase.getProducts());
                         }
                     }
-                    if(isPremium()){
+                    if (isPremium()) {
                         mainActivity.runOnUiThread(onExistPremium);
                     }
                     // check billingResult
@@ -157,9 +156,9 @@ public class BillingService {
 
     public String getSubscriptionCost(String subscriptionCode) {
         ProductDetails productDetails = productDetailsMap.get(subscriptionCode);
-        if(productDetails != null){
+        if (productDetails != null) {
             List<ProductDetails.SubscriptionOfferDetails> subscriptionOfferDetails = productDetails.getSubscriptionOfferDetails();
-            if(subscriptionOfferDetails != null && !subscriptionOfferDetails.isEmpty()){
+            if (subscriptionOfferDetails != null && !subscriptionOfferDetails.isEmpty()) {
                 return subscriptionOfferDetails.get(0)
                         .getPricingPhases().getPricingPhaseList().get(0)
                         .getFormattedPrice();
@@ -200,6 +199,30 @@ public class BillingService {
         }
 
         return null;
+    }
+
+    /**
+     * Подтверждение платежа
+     */
+    void handlePurchase(Purchase purchase) {
+        AcknowledgePurchaseParams params = AcknowledgePurchaseParams.newBuilder()
+                .setPurchaseToken(purchase.getPurchaseToken())
+                .build();
+
+        AcknowledgePurchaseResponseListener responseListener = billingResult -> {
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                // Если все ок
+                // обновим на UI данные что это Премиум
+                payedProducts.addAll(purchase.getProducts());
+                if (isPremium()) {
+                    mainActivity.runOnUiThread(() -> mainActivity.onExistPremium());
+                }
+            } else {
+                updateInfoFromStore(() -> mainActivity.onExistPremium());
+            }
+        };
+
+        billingClient.acknowledgePurchase(params, responseListener);
     }
 
     public void onDestroy() {
