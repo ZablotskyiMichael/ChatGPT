@@ -135,11 +135,21 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             return;
         }
         if (textView == null) {
+            int codeStart = text.indexOf(CODE_WRAPPING);
+            if(codeStart == 0){
+                createCode(text.substring(codeStart + 3), null, holder);
+                return;
+            }
             textView = new TextView(context);
             textView.setTextSize(16);
             holder.cardWrapper.addView(textView);
         } else {
             text = textView.getText() + text;
+            int codeStart = text.indexOf(CODE_WRAPPING);
+            if(codeStart == 0){
+                createCode(text.substring(codeStart + 3), null, holder);
+                return;
+            }
         }
         int codeStart = text.indexOf(CODE_WRAPPING);
         textView.setText(codeStart > 0 ? text.substring(0, codeStart) : text);

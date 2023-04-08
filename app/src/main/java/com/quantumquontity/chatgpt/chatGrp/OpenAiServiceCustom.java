@@ -85,7 +85,7 @@ public class OpenAiServiceCustom extends OpenAiService {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Exception parseSse");
+            System.out.println("Exception parseSse " + e);
         }
     }
 }
