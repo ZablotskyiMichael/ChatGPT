@@ -7,6 +7,7 @@ import static com.theokanning.openai.service.OpenAiService.defaultRetrofit;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -42,6 +43,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputLayout;
 import com.quantumquontity.chatgpt.adapter.MessageCardViewAdapter;
+import com.quantumquontity.chatgpt.billing.BillingService;
 import com.quantumquontity.chatgpt.chatGrp.OpenAiServiceCustom;
 import com.quantumquontity.chatgpt.dao.ChatDao;
 import com.quantumquontity.chatgpt.dao.ChatMessageDao;
@@ -86,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
 
     private RewardedAd rewardedAd;
 
+    private BillingService billingService;
+
     private ChatService chatService;
     private ChatMessageService chatMessageService;
     private ImageView catLogoImageView;
@@ -108,7 +112,8 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout createNewChat;
     private ActionBarDrawerToggle drawerToggle;
     private TextView quantityToken;
-    private Button startShowADS;
+    private TextView premiumExistLabel;
+    private ConstraintLayout premiumExistLabelWrapper;
     private Button buyPremiumChatButton;
 
     /**
@@ -211,14 +216,13 @@ public class MainActivity extends AppCompatActivity {
         chatService = new ChatService(new ChatDao(dbHelper));
         chatMessageService = new ChatMessageService(new ChatMessageDao(dbHelper));
         pointService = new PointService(this);
+        billingService = new BillingService(this, this::onExistPremium);
     }
 
     private void setOnClickListeners() {
         inputMessageLayout.setEndIconOnClickListener(this::onSendMessage);
         initChatsOnClickListeners();
         startChatButton.setOnClickListener(this::onStartChatClick);
-
-        startShowADS.setOnClickListener(this::showADsAndGetPoint);
 
         clearAllChat.setOnClickListener(this::deleteAllChat);
         createNewChat.setOnClickListener(this::onStartChatClick);
@@ -227,9 +231,45 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void onExistPremium(){
+        premiumExistLabel.setVisibility(View.VISIBLE);
+        premiumExistLabelWrapper.setVisibility(View.VISIBLE);
+        buyPremiumChatButton.setVisibility(View.GONE);
+        initPoints();
+    }
+
+    private void buy1MonthSubscription(Dialog dialog) {
+        dialog.dismiss();
+        billingService.buy1MonthSubscription();
+    }
+
+    private void buy3MonthsSubscription(Dialog dialog) {
+        dialog.dismiss();
+        billingService.buy3MonthsSubscription();
+    }
+
+    private void buy12MonthsSubscription(Dialog dialog) {
+        dialog.dismiss();
+        billingService.buy12MonthsSubscription();
+    }
+
     private void openSubscribePage(View view) {
         final Dialog dialog = new Dialog(MainActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.subscribe_page);
+
+        subscription_1_month = dialog.findViewById(R.id.subscription_1_month);
+        subscription_3_month = dialog.findViewById(R.id.subscription_3_month);
+        subscription_12_month = dialog.findViewById(R.id.subscription_12_month);
+
+        subscription_1_month.setOnClickListener(view1 -> buy1MonthSubscription(dialog));
+        subscription_3_month.setOnClickListener(view1 -> buy3MonthsSubscription(dialog));
+        subscription_12_month.setOnClickListener(view1 -> buy12MonthsSubscription(dialog));
+
+        // Проставим актуальные цены
+        subscription_1_month.setText(getText(R.string.month1) + "\n" + billingService.get1MonthSubscriptionCost());
+        subscription_3_month.setText(getText(R.string.months3) + "\n" + billingService.get3MonthsSubscriptionCost());
+        subscription_12_month.setText(getText(R.string.months12) + "\n" + billingService.get12MonthsSubscriptionCost());
+
         dialog.show();
 
     }
@@ -289,6 +329,8 @@ public class MainActivity extends AppCompatActivity {
         messagesRecyclerView.setVisibility(View.VISIBLE);
         messagesLayout.setVisibility(View.VISIBLE);
         catLogoWrapper.setVisibility(View.GONE);
+        premiumExistLabel.setVisibility(View.GONE);
+        premiumExistLabelWrapper.setVisibility(View.GONE);
 
         // Сохранение нового чата
         String newChatName = getResources().getString(R.string.new_chat);
@@ -344,6 +386,8 @@ public class MainActivity extends AppCompatActivity {
         messagesRecyclerView.setVisibility(View.GONE);
         messagesLayout.setVisibility(View.GONE);
         catLogoWrapper.setVisibility(View.VISIBLE);
+        premiumExistLabel.setVisibility(View.VISIBLE);
+        premiumExistLabelWrapper.setVisibility(View.VISIBLE);
     }
 
     private void initMenu() {
@@ -478,7 +522,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isInfinityPoints() {
-        return false; // TODO проверять что там в billing сервисе
+        return billingService.isPremium();
     }
 
     /**
@@ -549,18 +593,22 @@ public class MainActivity extends AppCompatActivity {
         messagesLayout = findViewById(R.id.messagesLayout);
         catLogoWrapper = findViewById(R.id.catLogoWrapper);
         inputMessageLayout = findViewById(R.id.inputMessageLayout);
-        subscription_1_month = findViewById(R.id.subscription_1_month);
-        subscription_3_month = findViewById(R.id.subscription_3_month);
-        subscription_12_month = findViewById(R.id.subscription_12_month);
+        premiumExistLabel = findViewById(R.id.premiumExistLabel);
+        premiumExistLabelWrapper = findViewById(R.id.premiumExistLabelWrapper);
 
         //нужно что бы найти HeaderView и LinearLayout внутри navigationView
         View headerLayout = navigationView.getHeaderView(0);
         clearAllChat = headerLayout.findViewById(R.id.clearAllChat);
         createNewChat = headerLayout.findViewById(R.id.createNewChat);
-        startShowADS = findViewById(R.id.startShowADS);
         quantityToken = findViewById(R.id.quantityToken);
         buyPremiumChatButton = findViewById(R.id.buyPremiumChatButton);
 
         /* progressBar = findViewById(R.id.progressBar);*/
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        billingService.onDestroy();
     }
 }

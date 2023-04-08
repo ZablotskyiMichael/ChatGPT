@@ -15,62 +15,85 @@
         android:orientation="vertical">
 
         <!-- Верхняя часть страницы с текстовым полем и меню -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
             <!-- Иконка с меню -->
             <ImageView
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="8dp"
                 android:id="@+id/chatsIcon"
                 android:layout_width="38dp"
                 android:layout_height="38dp"
-                android:visibility="invisible"
-                android:src="@drawable/menu_icon"
-                android:elevation="2dp"
-                />
-            <TextView
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:elevation="2dp"
+                android:src="@drawable/menu_icon"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
                 android:id="@+id/chatGptIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                android:visibility="visible"
-                android:text="CatGPT"
-                android:textSize="30sp"
-                android:textColor="@color/white"
-                android:shadowRadius="8"
-                android:shadowDy="4"
-                android:shadowDx="4"
-                android:shadowColor="@color/black"
-                android:src="@drawable/baseline_menu_24"
                 android:layout_gravity="center"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="8dp"
+                android:shadowColor="@color/black"
+                android:shadowDx="4"
+                android:shadowDy="4"
+                android:shadowRadius="8"
+                android:src="@drawable/baseline_menu_24"
+                android:text="@string/app_name"
+                android:textColor="@color/white"
+                android:textSize="30sp"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:layout_marginTop="8dp"
-                    android:id="@+id/quantityToken"
-                    android:layout_width="100dp"
-                    android:layout_height="38dp"
-                    android:visibility="visible"
-                    android:text="5"
-                    android:textSize="20sp"
-                    android:textColor="@color/white"
-                    android:shadowRadius="8"
-                    android:shadowDy="4"
-                    android:shadowDx="4"
-                    android:shadowColor="@color/black"
-                    android:background="@drawable/background_token"
-                    android:gravity="center"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+            <TextView
+                android:id="@+id/quantityToken"
+                android:layout_width="100dp"
+                android:layout_height="38dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/background_token"
+                android:gravity="center"
+                android:shadowColor="@color/black"
+                android:shadowDx="4"
+                android:shadowDy="4"
+                android:shadowRadius="8"
+                android:text="5"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/premiumExistLabelWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+
+            <TextView
+                android:id="@+id/premiumExistLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:shadowColor="@color/black"
+                android:shadowDx="4"
+                android:shadowDy="4"
+                android:shadowRadius="8"
+                android:src="@drawable/baseline_menu_24"
+                android:text="@string/premium"
+                android:textColor="@color/white"
+                android:textSize="30sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/messagesLayout"
@@ -82,9 +105,9 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/messagesRecyclerView"
-                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -128,28 +151,10 @@
                         android:shadowRadius="10"
                         android:text="START CHAT"
                         android:textColor="@color/white"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
-
-
-                    <Button
-                        android:id="@+id/startShowADS"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/background_button_start_chat"
-                        android:paddingStart="40dp"
-                        android:paddingEnd="40dp"
-                        android:shadowColor="@color/black"
-                        android:shadowDx="4"
-                        android:shadowDy="4"
-                        android:shadowRadius="10"
-                        android:text="SHOW ADS"
-                        android:textColor="@color/white"
-                        app:layout_constraintBottom_toTopOf="@+id/buyPremiumChatButton"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/startChatButton" />
+                        app:layout_constraintTop_toTopOf="parent" />
+
 
                     <Button
                         android:id="@+id/buyPremiumChatButton"
@@ -163,11 +168,11 @@
                         android:shadowDx="4"
                         android:shadowDy="4"
                         android:shadowRadius="10"
-                        android:text="Premium CHAT"
+                        android:text="@string/buy_premium"
                         android:textColor="@color/white"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -199,33 +204,33 @@
             <!-- Текстовое поле для ввода текста -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputMessageLayout"
-                android:layout_gravity="bottom"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:layout_weight="1"
                 android:hint="@string/sendMessage"
                 android:textColorHint="@color/black"
-                app:endIconMode="custom"
-                app:endIconDrawable="@drawable/baseline_send_24"
-                app:errorEnabled="true"
                 android:visibility="gone"
                 app:boxCornerRadiusBottomEnd="15dp"
-                app:boxCornerRadiusTopStart="15dp"
-                app:boxCornerRadiusTopEnd="15dp"
                 app:boxCornerRadiusBottomStart="15dp"
-                app:boxStrokeWidth="0.2dp">
+                app:boxCornerRadiusTopEnd="15dp"
+                app:boxCornerRadiusTopStart="15dp"
+                app:boxStrokeWidth="0.2dp"
+                app:endIconDrawable="@drawable/baseline_send_24"
+                app:endIconMode="custom"
+                app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:layout_gravity="bottom"
                     android:id="@+id/inputMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
                     android:layout_weight="1"
                     android:hint="@string/sendMessage"
                     android:inputType="text"
                     android:textColor="#424242"
                     android:textColorHint="#9F9F9F"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
     </LinearLayout>
@@ -233,11 +238,11 @@
     <!-- Выдвижная панель меню -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
-        app:headerLayout="@layout/header_navigation_view_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="#303030"
-        app:itemTextColor="@color/white"/>
+        app:headerLayout="@layout/header_navigation_view_layout"
+        app:itemTextColor="@color/white" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

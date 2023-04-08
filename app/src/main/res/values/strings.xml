@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ChatGPT</string>
+    <string name="app_name">CatGPT</string>
     <string name="sendMessage">Send a message...</string>
     <string name="navigation_drawer_open">navigation drawer open</string>
     <string name="navigation_drawer_close">Navigation drawer close</string>
@@ -18,4 +18,10 @@
     <string name="catgpt_premium">CatGPT PREMIUM:</string>
     <string name="unknown_error">Oops... An unknown error has occurred.</string>
     <string name="ad_is_not_available">Ad viewing is not available. Try later.</string>
+    <string name="months12">12 Months</string>
+    <string name="months3">3 Months</string>
+    <string name="month1">1 Month</string>
+    <string name="cost_unknown">Cost unknown</string>
+    <string name="buy_premium">Buy PREMIUM</string>
+    <string name="premium">Premium</string>
 </resources>
