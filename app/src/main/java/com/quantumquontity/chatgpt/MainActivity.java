@@ -95,6 +95,9 @@ public class MainActivity extends AppCompatActivity {
 
     private CircularProgressIndicator progressBar;
     private Button startChatButton;
+    private Button subscription_1_month;
+    private Button subscription_3_month;
+    private Button subscription_12_month;
     private RecyclerView messagesRecyclerView;
     private LinearLayout messagesLayout;
     private LinearLayout catLogoWrapper;
@@ -546,6 +549,9 @@ public class MainActivity extends AppCompatActivity {
         messagesLayout = findViewById(R.id.messagesLayout);
         catLogoWrapper = findViewById(R.id.catLogoWrapper);
         inputMessageLayout = findViewById(R.id.inputMessageLayout);
+        subscription_1_month = findViewById(R.id.subscription_1_month);
+        subscription_3_month = findViewById(R.id.subscription_3_month);
+        subscription_12_month = findViewById(R.id.subscription_12_month);
 
         //нужно что бы найти HeaderView и LinearLayout внутри navigationView
         View headerLayout = navigationView.getHeaderView(0);

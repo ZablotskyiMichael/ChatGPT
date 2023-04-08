@@ -7,29 +7,29 @@
     android:background="@color/backgroundSubscribe">
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/noAdsLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:text="no ads"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/textView2"
+        app:layout_constraintBottom_toTopOf="@+id/unlimited_requests_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/unlimited_requests_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:text="unlimited requests"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/weeklyUseButton"
+        app:layout_constraintBottom_toTopOf="@+id/subscription_1_month"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/noAdsLabel" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/bottomLogo"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -41,22 +41,22 @@
 
     <Button
 
-        android:id="@+id/yearUseButton"
+        android:id="@+id/subscription_12_month"
         style="@style/PremiumButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="130dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/background_button_premium_chat"
-        android:text="year Use \n119.99 USD"
+        android:text="12 Months \n119.99 USD"
         android:lines="2"
         android:ellipsize="end"
-        app:layout_constraintBottom_toTopOf="@+id/imageView2"
+        app:layout_constraintBottom_toTopOf="@+id/bottomLogo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/monthlyUseButton"
+        android:id="@+id/subscription_3_month"
         style="@style/PremiumButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -64,15 +64,15 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/background_button_premium_chat"
-        android:text="monthly Use \n19.99 USD"
+        android:text="3 Months \n19.99 USD"
         android:lines="2"
         android:ellipsize="end"
-        app:layout_constraintBottom_toTopOf="@+id/yearUseButton"
+        app:layout_constraintBottom_toTopOf="@+id/subscription_12_month"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/weeklyUseButton"
+        android:id="@+id/subscription_1_month"
         style="@style/PremiumButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -80,16 +80,16 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/background_button_premium_chat"
-        android:text="weekly Use \n9.99 USD"
+        android:text="1 Month \n9.99 USD"
         android:lines="2"
         android:ellipsize="end"
-        app:layout_constraintBottom_toTopOf="@+id/monthlyUseButton"
+        app:layout_constraintBottom_toTopOf="@+id/subscription_3_month"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/premiumLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
