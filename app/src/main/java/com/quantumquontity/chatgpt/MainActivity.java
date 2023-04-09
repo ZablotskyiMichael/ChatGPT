@@ -49,6 +49,7 @@ import com.quantumquontity.chatgpt.dao.ChatMessageDao;
 import com.quantumquontity.chatgpt.dao.DBHelper;
 import com.quantumquontity.chatgpt.data.Chat;
 import com.quantumquontity.chatgpt.dict.SubPage;
+import com.quantumquontity.chatgpt.dict.Suggests;
 import com.quantumquontity.chatgpt.dto.ChatMessageCardView;
 import com.quantumquontity.chatgpt.service.ChatMessageService;
 import com.quantumquontity.chatgpt.service.ChatService;
@@ -62,10 +63,15 @@ import com.theokanning.openai.completion.chat.ChatMessageRole;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
@@ -104,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
     private Button subscription_12_month;
     private RecyclerView messagesRecyclerView;
     private LinearLayout messagesLayout;
+    private LinearLayout exampleRequest;
     private LinearLayout catLogoWrapper;
     private MessageCardViewAdapter messageCardViewAdapter;
     private NavigationView navigationView;
@@ -115,6 +122,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView premiumExistLabel;
     private ConstraintLayout premiumExistLabelWrapper;
     private Button buyPremiumChatButton;
+    private Button buttonTabRequestOne;
+    private Button buttonTabRequestTwo;
+    private Button buttonTabRequestThree;
+    private Button buttonTabRequestFour;
 
     /**
      * Вспомогательный класс чтоб понять где мы сейчас.
@@ -231,7 +242,15 @@ public class MainActivity extends AppCompatActivity {
         createNewChat.setOnClickListener(this::onStartChatClick);
 
         buyPremiumChatButton.setOnClickListener(this::openSubscribePage);
+        buttonTabRequestOne.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestOne));
+        buttonTabRequestTwo.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestTwo));
+        buttonTabRequestThree.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestThree));
+        buttonTabRequestFour.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestFour));
 
+    }
+
+    private void setInputTextFromExample(View view, Button button) {
+        inputMessage.setText(button.getText().toString());
     }
 
     public void onExistPremium(){
@@ -323,13 +342,25 @@ public class MainActivity extends AppCompatActivity {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
+        List<Suggests> suggestsList = Arrays.asList(Suggests.values());
+
+        Set<Integer> uniqueeNumders = getUniqueeNumders(4, suggestsList.size());
+        Iterator<Integer> iterator = uniqueeNumders.iterator();
+
+        buttonTabRequestOne.setText(getString(suggestsList.get(iterator.next()).getText()));
+        buttonTabRequestTwo.setText(getString(suggestsList.get(iterator.next()).getText()));
+        buttonTabRequestThree.setText(getString(suggestsList.get(iterator.next()).getText()));
+        buttonTabRequestFour.setText(getString(suggestsList.get(iterator.next()).getText()));
+
+
         subPage = SubPage.CHAT;
         chatsIcon.setVisibility(View.VISIBLE);
         inputMessageLayout.setVisibility(View.VISIBLE);
         inputMessage.setVisibility(View.VISIBLE);
         catLogoImageView.setVisibility(View.GONE);
         startChatButton.setVisibility(View.GONE);
-        messagesRecyclerView.setVisibility(View.VISIBLE);
+        messagesRecyclerView.setVisibility(View.GONE);
+        exampleRequest.setVisibility(View.VISIBLE);
         messagesLayout.setVisibility(View.VISIBLE);
         catLogoWrapper.setVisibility(View.GONE);
         premiumExistLabel.setVisibility(View.GONE);
@@ -343,6 +374,16 @@ public class MainActivity extends AppCompatActivity {
         navigationView.getMenu().clear();
         initMenu();
         messageCardViewAdapter.refreshData(new ArrayList<>());
+    }
+
+    private Set<Integer> getUniqueeNumders(int count, int maxNumber){
+        Random random = new Random();
+        Set<Integer> uniqueNumbers = new HashSet<>();
+
+        while (uniqueNumbers.size() < count) {
+            uniqueNumbers.add(random.nextInt(maxNumber));
+        }
+       return uniqueNumbers;
     }
 
     private void initChatsOnClickListeners() {
@@ -391,6 +432,7 @@ public class MainActivity extends AppCompatActivity {
         catLogoWrapper.setVisibility(View.VISIBLE);
         premiumExistLabel.setVisibility(View.VISIBLE);
         premiumExistLabelWrapper.setVisibility(View.VISIBLE);
+        exampleRequest.setVisibility(View.GONE);
     }
 
     private void initMenu() {
@@ -431,6 +473,14 @@ public class MainActivity extends AppCompatActivity {
             currentChatId = item.getItemId();
             uploadMessagesForCurrentChat();
             drawerLayout.closeDrawer(GravityCompat.START);
+            if (exampleRequest.getVisibility() == View.VISIBLE ){
+                exampleRequest.setVisibility(View.GONE);
+                messagesRecyclerView.setVisibility(View.VISIBLE);
+                messagesLayout.setVisibility(View.VISIBLE);
+            }if (messageCardViewAdapter.getItemCount() == 0){
+                exampleRequest.setVisibility(View.VISIBLE);
+                messagesRecyclerView.setVisibility(View.GONE);
+            }
             return true;
         });
 
@@ -456,6 +506,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void onSendMessage(View view) {
         hideKeyboard(view);
+        if (exampleRequest.getVisibility()==View.VISIBLE){
+            exampleRequest.setVisibility(View.GONE);
+            messagesRecyclerView.setVisibility(View.VISIBLE);
+        }
         if (inputMessage.getText().toString().isEmpty()) {
             // кинуть ошибку
             return;
@@ -619,6 +673,12 @@ public class MainActivity extends AppCompatActivity {
         createNewChat = headerLayout.findViewById(R.id.createNewChat);
         quantityToken = findViewById(R.id.quantityToken);
         buyPremiumChatButton = findViewById(R.id.buyPremiumChatButton);
+
+        exampleRequest = findViewById(R.id.exampleRequest);
+        buttonTabRequestOne = findViewById(R.id.buttonTabRequestOne);
+        buttonTabRequestTwo = findViewById(R.id.buttonTabRequestTwo);
+        buttonTabRequestThree = findViewById(R.id.buttonTabRequestThree);
+        buttonTabRequestFour = findViewById(R.id.buttonTabRequestFour);
 
         /* progressBar = findViewById(R.id.progressBar);*/
     }

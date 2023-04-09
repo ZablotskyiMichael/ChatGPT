@@ -26,4 +26,19 @@
     <string name="premium">Premium</string>
     <string name="thinking">thinking</string>
     <string name="processing">processing</string>
+    <string name="suggest_01">When is  the best time  to plant  tomatoes?</string>
+    <string name="suggest_02">Explain  quantum  computing in  simple terms</string>
+    <string name="suggest_03">Can AI be dangerous?</string>
+    <string name="suggest_04">Can AI replace human jobs?</string>
+    <string name="suggest_05">Tell me a joke.</string>
+    <string name="suggest_06">How to cook Pizza?</string>
+    <string name="suggest_07">How to cook Tacos?</string>
+    <string name="suggest_08">How to cook Spaghetti?</string>
+    <string name="suggest_09">How to cook Ramen?</string>
+    <string name="suggest_10">How to cook Sushi?</string>
+    <string name="suggest_11">How to improve Communication skill?</string>
+    <string name="suggest_12">How to improve Leadership skill?</string>
+    <string name="suggest_13">How to improve creativity skill?</string>
+    <string name="suggest_14">How do I fix laptop won\'t turn on?</string>
+    <string name="suggest_15">How do I fix blue screen of death (BSOD)?</string>
 </resources>
