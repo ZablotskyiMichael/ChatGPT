@@ -645,7 +645,8 @@ public class MainActivity extends AppCompatActivity {
                         role.value()
                 )
         );
-        messageCardViewAdapter.addItem(new ChatMessageCardView(savedMessage));
+        int lastPosition = messageCardViewAdapter.addItem(new ChatMessageCardView(savedMessage));
+        messagesRecyclerView.getLayoutManager().scrollToPosition(lastPosition);
         return savedMessage;
     }
 

@@ -45,21 +45,21 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         notifyDataSetChanged();
     }
 
-    public void addItem(ChatMessageCardView item) {
+    public int addItem(ChatMessageCardView item) {
         mDataList.add(item);
         notifyItemInserted(mDataList.size() - 1);
+        return mDataList.size() - 1;
     }
 
     public void updateLastItemText(String newText) {
         if (!newText.isEmpty()) {
-            if(lastHolder != null){
-                if (lastHolder.textNow) {
-                    createText(newText, lastHolder.currentTextOrCodeView, lastHolder);
-                } else {
-                    createCode(newText, lastHolder.currentTextOrCodeView, lastHolder);
-                }
+            ChatMessageCardView messageCardView = mDataList.get(mDataList.size() - 1);
+            messageCardView.setText(messageCardView.getText() + newText);
+            TextView currentTextOrCodeView = lastHolder.currentTextOrCodeView;
+            if (lastHolder.textNow) {
+                createText(currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText, currentTextOrCodeView, lastHolder);
             } else {
-                notifyItemChanged(mDataList.size() - 1);
+                createCode(currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText, currentTextOrCodeView, lastHolder);
             }
         }
     }
@@ -75,7 +75,6 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
     // Связываем данные с элементом списка (карточкой)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.currentTextOrCodeView = null;
         ChatMessageCardView data = mDataList.get(position);
         holder.cardWrapper.removeAllViews();
         initNewItem(holder, data);
@@ -144,23 +143,17 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             holder.stopWrite();
         }
         if (textView == null) {
-            int codeStart = text.indexOf(CODE_WRAPPING);
-            if(codeStart == 0){
-                createCode(text.substring(codeStart + 3), null, holder);
-                return;
-            }
             textView = new TextView(context);
             textView.setTextSize(16);
             holder.cardWrapper.addView(textView);
-        } else {
-            text = textView.getText() + text;
-            int codeStart = text.indexOf(CODE_WRAPPING);
-            if(codeStart == 0){
-                createCode(text.substring(codeStart + 3), null, holder);
-                return;
-            }
         }
+
         int codeStart = text.indexOf(CODE_WRAPPING);
+        if(codeStart == 0){
+            createCode(text.substring(codeStart + 3), null, holder);
+            return;
+        }
+
         textView.setText(codeStart > 0 ? text.substring(0, codeStart) : text);
         holder.currentTextOrCodeView = textView;
         if (codeStart > -1) {
@@ -172,10 +165,6 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
     private void createCode(String code, TextView textView, ViewHolder holder) {
         holder.textNow = false;
-        holder.currentTextOrCodeView = null;
-        if (code.isEmpty()) {
-            return;
-        }
         if (textView == null) {
             CardView cardView = new CardView(context);
             RelativeLayout relativeLayout = new RelativeLayout(context);
@@ -240,8 +229,6 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             textView.setTextColor(context.getResources().getColor(R.color.white));
             textView.setTextSize(16);
             cardView.addView(textView);
-        } else {
-            code = textView.getText() + code;
         }
         int textStart = code.indexOf(CODE_WRAPPING);
         int firstLineEnd = code.indexOf("\n");
