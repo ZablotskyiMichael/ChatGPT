@@ -17,12 +17,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -100,10 +100,10 @@ public class MainActivity extends AppCompatActivity {
     private ChatMessageService chatMessageService;
     private ImageView catLogoImageView;
     private TextInputLayout inputMessageLayout;
-    private ImageView chatsIcon;
+    private ImageView chatsIconMainPage;
+    private ImageView chatsIconChatPage;
     private EditText inputMessage;
 
-    private CircularProgressIndicator progressBar;
     private Button startChatButton;
     private Button subscription_1_month;
     private Button subscription_3_month;
@@ -118,9 +118,12 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout clearAllChat;
     private LinearLayout createNewChat;
     private ActionBarDrawerToggle drawerToggle;
-    private TextView quantityToken;
+    private TextView quantityTokenMainPage;
+    private TextView quantityTokenChatPage;
     private TextView premiumExistLabel;
     private ConstraintLayout premiumExistLabelWrapper;
+    private LinearLayout chatPageWrapper;
+    private LinearLayout mainPageWrapper;
     private Button buyPremiumChatButton;
     private Button buttonTabRequestOne;
     private Button buttonTabRequestTwo;
@@ -139,15 +142,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         findElement();
         initServices();
         initData();
         loadAd();
         setOnClickListeners();
-        }
+    }
 
     private void loadAd() {
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -208,11 +213,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initPoints() {
-        if(isInfinityPoints()){
-            quantityToken.setText(String.valueOf('\u221E'));
+        if (isInfinityPoints()) {
+            quantityTokenMainPage.setText(String.valueOf('\u221E'));
+            quantityTokenChatPage.setText(String.valueOf('\u221E'));
         } else {
             currentPoints = pointService.getCurrentPoints();
-            quantityToken.setText(String.valueOf(currentPoints));
+            quantityTokenMainPage.setText(String.valueOf(currentPoints));
+            quantityTokenChatPage.setText(String.valueOf(currentPoints));
         }
     }
 
@@ -253,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
         inputMessage.setText(button.getText().toString());
     }
 
-    public void onExistPremium(){
+    public void onExistPremium() {
         premiumExistLabel.setVisibility(View.VISIBLE);
         premiumExistLabelWrapper.setVisibility(View.VISIBLE);
         buyPremiumChatButton.setVisibility(View.GONE);
@@ -306,7 +313,8 @@ public class MainActivity extends AppCompatActivity {
                 String rewardType = rewardItem.getType();
                 currentPoints++;
                 pointService.updatePoints(currentPoints);
-                quantityToken.setText(String.valueOf(currentPoints));
+                quantityTokenMainPage.setText(String.valueOf(currentPoints));
+                quantityTokenChatPage.setText(String.valueOf(currentPoints));
                 loadAd();
             });
         } else {
@@ -316,24 +324,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deleteAllChat(View view) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle(R.string.deletion_confirmation);
-            builder.setMessage(R.string.question_delete_all_chat);
-            builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-                chatService.deleteAllChat();
-                navigationView.getMenu().clear();
-                initMenu();
-                drawerLayout.closeDrawer(GravityCompat.START);
-                if (subPage == SubPage.CHAT) {
-                    onBackPressed();
-                }
-            });
-            builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
-                dialog.dismiss();
-            });
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.deletion_confirmation);
+        builder.setMessage(R.string.question_delete_all_chat);
+        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+            chatService.deleteAllChat();
+            navigationView.getMenu().clear();
+            initMenu();
+            drawerLayout.closeDrawer(GravityCompat.START);
+            if (subPage == SubPage.CHAT) {
+                onBackPressed();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
+            dialog.dismiss();
+        });
 
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
 
     }
 
@@ -354,7 +362,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         subPage = SubPage.CHAT;
-        chatsIcon.setVisibility(View.VISIBLE);
+        chatPageWrapper.setVisibility(View.VISIBLE);
+        mainPageWrapper.setVisibility(View.GONE);
+        chatsIconMainPage.setVisibility(View.VISIBLE);
+        chatsIconChatPage.setVisibility(View.VISIBLE);
         inputMessageLayout.setVisibility(View.VISIBLE);
         inputMessage.setVisibility(View.VISIBLE);
         catLogoImageView.setVisibility(View.GONE);
@@ -376,14 +387,14 @@ public class MainActivity extends AppCompatActivity {
         messageCardViewAdapter.refreshData(new ArrayList<>());
     }
 
-    private Set<Integer> getUniqueeNumders(int count, int maxNumber){
+    private Set<Integer> getUniqueeNumders(int count, int maxNumber) {
         Random random = new Random();
         Set<Integer> uniqueNumbers = new HashSet<>();
 
         while (uniqueNumbers.size() < count) {
             uniqueNumbers.add(random.nextInt(maxNumber));
         }
-       return uniqueNumbers;
+        return uniqueNumbers;
     }
 
     private void initChatsOnClickListeners() {
@@ -391,7 +402,14 @@ public class MainActivity extends AppCompatActivity {
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
-        chatsIcon.setOnClickListener(view -> {
+        chatsIconMainPage.setOnClickListener(view -> {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+        chatsIconChatPage.setOnClickListener(view -> {
             if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 drawerLayout.closeDrawer(GravityCompat.START);
             } else {
@@ -422,8 +440,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void toMainPage() {
         subPage = SubPage.MAIN;
-        chatsIcon.setVisibility(View.GONE);
-        inputMessageLayout.setVisibility(View.GONE);
+        chatPageWrapper.setVisibility(View.GONE);
+        mainPageWrapper.setVisibility(View.VISIBLE);
+        chatsIconMainPage.setVisibility(View.GONE);
+        chatsIconChatPage.setVisibility(View.GONE);
         inputMessage.setVisibility(View.GONE);
         catLogoImageView.setVisibility(View.VISIBLE);
         startChatButton.setVisibility(View.VISIBLE);
@@ -473,11 +493,12 @@ public class MainActivity extends AppCompatActivity {
             currentChatId = item.getItemId();
             uploadMessagesForCurrentChat();
             drawerLayout.closeDrawer(GravityCompat.START);
-            if (exampleRequest.getVisibility() == View.VISIBLE ){
+            if (exampleRequest.getVisibility() == View.VISIBLE) {
                 exampleRequest.setVisibility(View.GONE);
                 messagesRecyclerView.setVisibility(View.VISIBLE);
                 messagesLayout.setVisibility(View.VISIBLE);
-            }if (messageCardViewAdapter.getItemCount() == 0){
+            }
+            if (messageCardViewAdapter.getItemCount() == 0) {
                 exampleRequest.setVisibility(View.VISIBLE);
                 messagesRecyclerView.setVisibility(View.GONE);
             }
@@ -506,8 +527,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void onSendMessage(View view) {
         hideKeyboard(view);
-        if (exampleRequest.getVisibility()==View.VISIBLE){
+        if (exampleRequest.getVisibility() == View.VISIBLE) {
             exampleRequest.setVisibility(View.GONE);
+            messagesLayout.setVisibility(View.VISIBLE);
             messagesRecyclerView.setVisibility(View.VISIBLE);
         }
         if (inputMessage.getText().toString().isEmpty()) {
@@ -515,11 +537,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if(currentPoints > 0 || isInfinityPoints()){
-            if(!isInfinityPoints()){
+        if (currentPoints > 0 || isInfinityPoints()) {
+            if (!isInfinityPoints()) {
                 currentPoints--;
                 pointService.updatePoints(currentPoints);
-                quantityToken.setText(String.valueOf(currentPoints));
+                quantityTokenMainPage.setText(String.valueOf(currentPoints));
+                quantityTokenChatPage.setText(String.valueOf(currentPoints));
             }
 
             inputMessageLayout.setEndIconOnClickListener(null);
@@ -642,7 +665,7 @@ public class MainActivity extends AppCompatActivity {
         chatMessageService.updateChatMessageText(currentChatMessage.getId(), currentChatMessage.getText());
     }
 
-    private void enableInput(){
+    private void enableInput() {
         inputMessageLayout.setEndIconOnClickListener(this::onSendMessage);
         if (inputMessage.getText().toString().isEmpty()) {
             inputMessage.setEnabled(true);
@@ -655,7 +678,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void findElement() {
         inputMessage = findViewById(R.id.inputMessage);
-        chatsIcon = findViewById(R.id.chatsIcon);
+        chatsIconMainPage = findViewById(R.id.chatsIconMainPage);
+        chatsIconChatPage = findViewById(R.id.chatsIconChatPage);
         drawerLayout = findViewById(R.id.drawer_layout);
         startChatButton = findViewById(R.id.startChatButton);
         navigationView = findViewById(R.id.nav_view);
@@ -666,12 +690,15 @@ public class MainActivity extends AppCompatActivity {
         inputMessageLayout = findViewById(R.id.inputMessageLayout);
         premiumExistLabel = findViewById(R.id.premiumExistLabel);
         premiumExistLabelWrapper = findViewById(R.id.premiumExistLabelWrapper);
+        chatPageWrapper = findViewById(R.id.chatPageWrapper);
+        mainPageWrapper = findViewById(R.id.mainPageWrapper);
 
         //нужно что бы найти HeaderView и LinearLayout внутри navigationView
         View headerLayout = navigationView.getHeaderView(0);
         clearAllChat = headerLayout.findViewById(R.id.clearAllChat);
         createNewChat = headerLayout.findViewById(R.id.createNewChat);
-        quantityToken = findViewById(R.id.quantityToken);
+        quantityTokenMainPage = findViewById(R.id.quantityTokenMainPage);
+        quantityTokenChatPage = findViewById(R.id.quantityTokenChatPage);
         buyPremiumChatButton = findViewById(R.id.buyPremiumChatButton);
 
         exampleRequest = findViewById(R.id.exampleRequest);
@@ -684,7 +711,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         billingService.onDestroy();
     }

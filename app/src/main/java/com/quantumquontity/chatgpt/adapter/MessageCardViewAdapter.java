@@ -52,10 +52,14 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
     public void updateLastItemText(String newText) {
         if (!newText.isEmpty()) {
-            if (lastHolder.textNow) {
-                createText(newText, lastHolder.currentTextOrCodeView, lastHolder);
+            if(lastHolder != null){
+                if (lastHolder.textNow) {
+                    createText(newText, lastHolder.currentTextOrCodeView, lastHolder);
+                } else {
+                    createCode(newText, lastHolder.currentTextOrCodeView, lastHolder);
+                }
             } else {
-                createCode(newText, lastHolder.currentTextOrCodeView, lastHolder);
+                notifyItemChanged(mDataList.size() - 1);
             }
         }
     }
