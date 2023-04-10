@@ -10,6 +10,7 @@
     <!-- Основной контент страницы -->
     <include layout="@layout/page_chat"/>
     <include layout="@layout/page_main"/>
+    <include layout="@layout/subscribe_page"/>
 
     <!-- Выдвижная панель меню -->
     <com.google.android.material.navigation.NavigationView

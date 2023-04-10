@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -23,6 +22,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -70,6 +70,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -122,8 +123,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView quantityTokenChatPage;
     private TextView premiumExistLabel;
     private ConstraintLayout premiumExistLabelWrapper;
-    private LinearLayout chatPageWrapper;
-    private LinearLayout mainPageWrapper;
     private Button buyPremiumChatButton;
     private Button buttonTabRequestOne;
     private Button buttonTabRequestTwo;
@@ -134,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
      * Вспомогательный класс чтоб понять где мы сейчас.
      */
     private SubPage subPage = SubPage.MAIN;
+    private Map<SubPage, ViewGroup> subPages = new HashMap<>();
     private long currentChatId = -1;
     private int currentPoints = 0;
     private com.quantumquontity.chatgpt.data.ChatMessage currentChatMessage = null;
@@ -148,10 +148,19 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         findElement();
+        initPages();
         initServices();
         initData();
         loadAd();
         setOnClickListeners();
+    }
+
+    private void initPages() {
+        for (SubPage subPage : SubPage.getAll()) {
+            ViewGroup subPageView = findViewById(subPage.getPageWrapperId());
+            subPages.put(subPage, subPageView);
+        }
+        showPage(SubPage.MAIN);
     }
 
     private void loadAd() {
@@ -248,7 +257,11 @@ public class MainActivity extends AppCompatActivity {
         clearAllChat.setOnClickListener(this::deleteAllChat);
         createNewChat.setOnClickListener(this::onStartChatClick);
 
-        buyPremiumChatButton.setOnClickListener(this::openSubscribePage);
+        subscription_1_month.setOnClickListener(view -> buy1MonthSubscription());
+        subscription_3_month.setOnClickListener(view -> buy3MonthsSubscription());
+        subscription_12_month.setOnClickListener(view -> buy12MonthsSubscription());
+
+        buyPremiumChatButton.setOnClickListener(view -> openSubscribePage());
         buttonTabRequestOne.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestOne));
         buttonTabRequestTwo.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestTwo));
         buttonTabRequestThree.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestThree));
@@ -267,40 +280,35 @@ public class MainActivity extends AppCompatActivity {
         initPoints();
     }
 
-    private void buy1MonthSubscription(Dialog dialog) {
-        dialog.dismiss();
+    private void buy1MonthSubscription() {
+        toMainPage();
         billingService.buy1MonthSubscription();
     }
 
-    private void buy3MonthsSubscription(Dialog dialog) {
-        dialog.dismiss();
+    private void buy3MonthsSubscription() {
+        toMainPage();
         billingService.buy3MonthsSubscription();
     }
 
-    private void buy12MonthsSubscription(Dialog dialog) {
-        dialog.dismiss();
+    private void buy12MonthsSubscription() {
+        toMainPage();
         billingService.buy12MonthsSubscription();
     }
 
-    private void openSubscribePage(View view) {
-        final Dialog dialog = new Dialog(MainActivity.this, android.R.style.Theme_Black_NoTitleBar);
-        dialog.setContentView(R.layout.subscribe_page);
+    public void showPage(SubPage newPage){
+        this.subPage = newPage;
+        subPages.forEach((page, view) -> {
+            view.setVisibility(page == newPage ? View.VISIBLE : View.GONE);
+        });
+    }
 
-        subscription_1_month = dialog.findViewById(R.id.subscription_1_month);
-        subscription_3_month = dialog.findViewById(R.id.subscription_3_month);
-        subscription_12_month = dialog.findViewById(R.id.subscription_12_month);
-
-        subscription_1_month.setOnClickListener(view1 -> buy1MonthSubscription(dialog));
-        subscription_3_month.setOnClickListener(view1 -> buy3MonthsSubscription(dialog));
-        subscription_12_month.setOnClickListener(view1 -> buy12MonthsSubscription(dialog));
-
+    private void openSubscribePage() {
         // Проставим актуальные цены
         subscription_1_month.setText(getText(R.string.month1) + "\n" + billingService.get1MonthSubscriptionCost());
         subscription_3_month.setText(getText(R.string.months3) + "\n" + billingService.get3MonthsSubscriptionCost());
         subscription_12_month.setText(getText(R.string.months12) + "\n" + billingService.get12MonthsSubscriptionCost());
 
-        dialog.show();
-
+        showPage(SubPage.SUBSCRIBE);
     }
 
     private void showADsAndGetPoint(View view) {
@@ -360,10 +368,7 @@ public class MainActivity extends AppCompatActivity {
         buttonTabRequestThree.setText(getString(suggestsList.get(iterator.next()).getText()));
         buttonTabRequestFour.setText(getString(suggestsList.get(iterator.next()).getText()));
 
-
-        subPage = SubPage.CHAT;
-        chatPageWrapper.setVisibility(View.VISIBLE);
-        mainPageWrapper.setVisibility(View.GONE);
+        showPage(SubPage.CHAT);
         chatsIconMainPage.setVisibility(View.VISIBLE);
         chatsIconChatPage.setVisibility(View.VISIBLE);
         inputMessageLayout.setVisibility(View.VISIBLE);
@@ -425,6 +430,8 @@ public class MainActivity extends AppCompatActivity {
         if (subPage == SubPage.CHAT) {
             dropCurrentChatIfEmpty();
             toMainPage();
+        } else if (subPage == SubPage.SUBSCRIBE) {
+            toMainPage();
         } else {
             super.onBackPressed();
         }
@@ -439,9 +446,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void toMainPage() {
-        subPage = SubPage.MAIN;
-        chatPageWrapper.setVisibility(View.GONE);
-        mainPageWrapper.setVisibility(View.VISIBLE);
+        showPage(SubPage.MAIN);
         chatsIconMainPage.setVisibility(View.GONE);
         chatsIconChatPage.setVisibility(View.GONE);
         inputMessage.setVisibility(View.GONE);
@@ -690,8 +695,10 @@ public class MainActivity extends AppCompatActivity {
         inputMessageLayout = findViewById(R.id.inputMessageLayout);
         premiumExistLabel = findViewById(R.id.premiumExistLabel);
         premiumExistLabelWrapper = findViewById(R.id.premiumExistLabelWrapper);
-        chatPageWrapper = findViewById(R.id.chatPageWrapper);
-        mainPageWrapper = findViewById(R.id.mainPageWrapper);
+
+        subscription_1_month = findViewById(R.id.subscription_1_month);
+        subscription_3_month = findViewById(R.id.subscription_3_month);
+        subscription_12_month = findViewById(R.id.subscription_12_month);
 
         //нужно что бы найти HeaderView и LinearLayout внутри navigationView
         View headerLayout = navigationView.getHeaderView(0);
