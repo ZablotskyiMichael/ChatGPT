@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <TextView
+        android:id="@+id/titlePageExampleRequest"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:shadowColor="@color/black"
+        android:shadowDx="3"
+        android:shadowDy="3"
+        android:shadowRadius="4"
+        android:text="How i can help you:"
+        android:textColor="#694C00"
+        android:textSize="30sp"
+        app:autoSizeMaxTextSize="30sp"
+        app:autoSizeMinTextSize="20sp"
+        app:autoSizeStepGranularity="2sp"
+        app:autoSizeTextType="uniform"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonTabRequestOne"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/background_example_request"
+        android:drawableBottom="@drawable/hand_tab"
+        android:drawablePadding="8dp"
+        android:ellipsize="end"
+        android:lines="4"
+        android:maxLines="4"
+        android:minLines="4"
+        android:padding="8dp"
+        android:singleLine="false"
+        android:text="“Explain quantum computing in simple terms” ->"
+        android:textAllCaps="false"
+        android:textColor="#757575"
+        android:visibility="visible"
+        app:autoSizeMaxTextSize="16sp"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintEnd_toStartOf="@+id/buttonTabRequestTwo"
+        app:layout_constraintStart_toStartOf="@+id/guideline4"
+        app:layout_constraintTop_toTopOf="@+id/guideline13" />
+
+    <Button
+        android:id="@+id/buttonTabRequestThree"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/background_example_request"
+        android:drawableBottom="@drawable/hand_tab"
+        android:drawablePadding="8dp"
+        android:lines="4"
+        android:padding="8dp"
+        android:text="“Explain \n quantum \ncomputing in \nsimple terms” ->"
+        android:textAllCaps="false"
+        android:textColor="#757575"
+        app:autoSizeMaxTextSize="16sp"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toTopOf="@+id/guideline14"
+        app:layout_constraintEnd_toStartOf="@+id/buttonTabRequestFour"
+        app:layout_constraintStart_toStartOf="@+id/guideline4"
+        app:layout_constraintTop_toBottomOf="@+id/buttonTabRequestOne" />
+
+    <Button
+        android:id="@+id/buttonTabRequestTwo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/background_example_request"
+        android:drawableBottom="@drawable/hand_tab"
+        android:drawablePadding="8dp"
+        android:lines="4"
+        android:padding="8dp"
+        android:text="“Explain \n quantum \ncomputing in \nsimple terms” ->"
+        android:textAllCaps="false"
+        android:textColor="#757575"
+        app:autoSizeMaxTextSize="16sp"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toEndOf="@+id/buttonTabRequestOne"
+        app:layout_constraintTop_toTopOf="@+id/guideline13" />
+
+    <Button
+        android:id="@+id/buttonTabRequestFour"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/background_example_request"
+        android:drawableBottom="@drawable/hand_tab"
+        android:drawablePadding="8dp"
+        android:lines="4"
+        android:padding="8dp"
+        android:text="“Explain \n quantum \ncomputing in \nsimple terms” ->"
+        android:textAllCaps="false"
+        android:textColor="#757575"
+        app:autoSizeMaxTextSize="16sp"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toTopOf="@+id/guideline14"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toEndOf="@+id/buttonTabRequestThree"
+        app:layout_constraintTop_toBottomOf="@+id/buttonTabRequestTwo" />
+
+    <TextView
+        android:id="@+id/textLower"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:shadowColor="@color/black"
+        android:shadowDx="3"
+        android:shadowDy="3"
+        android:shadowRadius="4"
+        android:text="And much more ..."
+        android:textColor="#694C00"
+        android:textSize="24sp"
+        app:autoSizeMaxTextSize="24sp"
+        app:autoSizeMinTextSize="16sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline14" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.91484183" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.09002433" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.53" />
+
+    <ImageView
+        android:id="@+id/imageArrowDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="@+id/guideline4"
+        app:layout_constraintTop_toBottomOf="@+id/textLower"
+        app:srcCompat="@drawable/arrow_down" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

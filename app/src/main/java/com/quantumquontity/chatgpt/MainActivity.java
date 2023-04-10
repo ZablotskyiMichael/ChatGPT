@@ -110,8 +110,7 @@ public class MainActivity extends AppCompatActivity {
     private Button subscription_3_month;
     private Button subscription_12_month;
     private RecyclerView messagesRecyclerView;
-    private LinearLayout messagesLayout;
-    private LinearLayout exampleRequest;
+    private ConstraintLayout exampleRequest;
     private LinearLayout catLogoWrapper;
     private MessageCardViewAdapter messageCardViewAdapter;
     private NavigationView navigationView;
@@ -377,7 +376,6 @@ public class MainActivity extends AppCompatActivity {
         startChatButton.setVisibility(View.GONE);
         messagesRecyclerView.setVisibility(View.GONE);
         exampleRequest.setVisibility(View.VISIBLE);
-        messagesLayout.setVisibility(View.VISIBLE);
         catLogoWrapper.setVisibility(View.GONE);
         premiumExistLabel.setVisibility(View.GONE);
         premiumExistLabelWrapper.setVisibility(View.GONE);
@@ -453,7 +451,6 @@ public class MainActivity extends AppCompatActivity {
         catLogoImageView.setVisibility(View.VISIBLE);
         startChatButton.setVisibility(View.VISIBLE);
         messagesRecyclerView.setVisibility(View.GONE);
-        messagesLayout.setVisibility(View.GONE);
         catLogoWrapper.setVisibility(View.VISIBLE);
         premiumExistLabel.setVisibility(View.VISIBLE);
         premiumExistLabelWrapper.setVisibility(View.VISIBLE);
@@ -501,7 +498,6 @@ public class MainActivity extends AppCompatActivity {
             if (exampleRequest.getVisibility() == View.VISIBLE) {
                 exampleRequest.setVisibility(View.GONE);
                 messagesRecyclerView.setVisibility(View.VISIBLE);
-                messagesLayout.setVisibility(View.VISIBLE);
             }
             if (messageCardViewAdapter.getItemCount() == 0) {
                 exampleRequest.setVisibility(View.VISIBLE);
@@ -534,7 +530,6 @@ public class MainActivity extends AppCompatActivity {
         hideKeyboard(view);
         if (exampleRequest.getVisibility() == View.VISIBLE) {
             exampleRequest.setVisibility(View.GONE);
-            messagesLayout.setVisibility(View.VISIBLE);
             messagesRecyclerView.setVisibility(View.VISIBLE);
         }
         if (inputMessage.getText().toString().isEmpty()) {
@@ -678,8 +673,8 @@ public class MainActivity extends AppCompatActivity {
         }
         /*progressBar.hide();*/
         // Восстановить endIcon
-        inputMessageLayout.setEndIconDrawable(R.drawable.baseline_send_24);
-        inputMessageLayout.setEndIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.iconEnd)));
+       // inputMessageLayout.setEndIconDrawable(R.drawable.baseline_send_24);
+       // inputMessageLayout.setEndIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.iconEnd)));
     }
 
     private void findElement() {
@@ -691,7 +686,6 @@ public class MainActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.nav_view);
         catLogoImageView = findViewById(R.id.catLogoImageView);
         messagesRecyclerView = findViewById(R.id.messagesRecyclerView);
-        messagesLayout = findViewById(R.id.messagesLayout);
         catLogoWrapper = findViewById(R.id.catLogoWrapper);
         inputMessageLayout = findViewById(R.id.inputMessageLayout);
         premiumExistLabel = findViewById(R.id.premiumExistLabel);
