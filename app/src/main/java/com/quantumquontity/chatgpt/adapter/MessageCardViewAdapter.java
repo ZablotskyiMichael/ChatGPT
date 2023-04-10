@@ -55,12 +55,14 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         if (!newText.isEmpty()) {
             ChatMessageCardView messageCardView = mDataList.get(mDataList.size() - 1);
             messageCardView.setText(messageCardView.getText() + newText);
-            TextView currentTextOrCodeView = lastHolder.currentTextOrCodeView;
+            /*TextView currentTextOrCodeView = lastHolder.currentTextOrCodeView;
+            System.out.println("lastHolder.getId() = " + lastHolder.id + "; text = " + (currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText));
             if (lastHolder.textNow) {
                 createText(currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText, currentTextOrCodeView, lastHolder);
             } else {
                 createCode(currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText, currentTextOrCodeView, lastHolder);
-            }
+            }*/
+            notifyItemChanged(mDataList.size() - 1);
         }
     }
 
@@ -78,6 +80,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         ChatMessageCardView data = mDataList.get(position);
         holder.cardWrapper.removeAllViews();
         initNewItem(holder, data);
+        System.out.println("onBindViewHolder: " + data.getId() + "; " + data.getText());
         createText(data.getText(), null, holder);
         if (mDataList.size() - 1 == position) {
             lastHolder = holder;
@@ -85,6 +88,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
     }
 
     private void initNewItem(ViewHolder holder, ChatMessageCardView data) {
+        holder.id = data.getId();
         RelativeLayout linearLayout = new RelativeLayout(context);
         ImageView imageUserOrSystem = new ImageView(context);
         ImageView imageCopyMessage = new ImageView(context);
@@ -253,6 +257,8 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
     // Хранит и переиспользует представления элементов списка (карточек)
     public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        long id = -1;
 
         /**
          * Сейчас пишем код или обычный текст.
