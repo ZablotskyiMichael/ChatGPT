@@ -144,6 +144,7 @@
         app:srcCompat="@drawable/bubscription_logo" />
 
     <Button
+        app:backgroundTint="@null"
         android:id="@+id/subscription_12_month"
         style="@style/PremiumButton"
         android:layout_width="0dp"
@@ -166,6 +167,7 @@
         app:layout_constraintTop_toTopOf="@+id/guideline9" />
 
     <Button
+        app:backgroundTint="@null"
         android:id="@+id/subscription_3_month"
         style="@style/PremiumButton"
         android:layout_width="0dp"
@@ -188,6 +190,7 @@
         app:layout_constraintTop_toTopOf="@+id/guideline8" />
 
     <Button
+        app:backgroundTint="@null"
         android:id="@+id/subscription_1_month"
         style="@style/PremiumButton"
         android:layout_width="0dp"

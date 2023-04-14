@@ -117,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private LinearLayout clearAllChat;
     private LinearLayout createNewChat;
+    private LinearLayout showAdsLinerLayout;
+    private LinearLayout showAdsLinerLayoutChatPage;
     private ActionBarDrawerToggle drawerToggle;
     private TextView quantityTokenMainPage;
     private TextView quantityTokenChatPage;
@@ -255,6 +257,9 @@ public class MainActivity extends AppCompatActivity {
 
         clearAllChat.setOnClickListener(this::deleteAllChat);
         createNewChat.setOnClickListener(this::onStartChatClick);
+
+        showAdsLinerLayout.setOnClickListener(this::showADsAndGetPoint);
+        showAdsLinerLayoutChatPage.setOnClickListener(this::showADsAndGetPoint);
 
         subscription_1_month.setOnClickListener(view -> buy1MonthSubscription());
         subscription_3_month.setOnClickListener(view -> buy3MonthsSubscription());
@@ -494,6 +499,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             currentChatId = item.getItemId();
             uploadMessagesForCurrentChat();
+            item.setCheckable(true);
             drawerLayout.closeDrawer(GravityCompat.START);
             if (exampleRequest.getVisibility() == View.VISIBLE) {
                 exampleRequest.setVisibility(View.GONE);
@@ -708,6 +714,9 @@ public class MainActivity extends AppCompatActivity {
         buttonTabRequestTwo = findViewById(R.id.buttonTabRequestTwo);
         buttonTabRequestThree = findViewById(R.id.buttonTabRequestThree);
         buttonTabRequestFour = findViewById(R.id.buttonTabRequestFour);
+
+        showAdsLinerLayout = findViewById(R.id.showAdsLinerLayout);
+        showAdsLinerLayoutChatPage = findViewById(R.id.showAdsLinerLayoutChatPage);
 
         /* progressBar = findViewById(R.id.progressBar);*/
     }

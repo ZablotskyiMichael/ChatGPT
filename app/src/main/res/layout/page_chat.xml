@@ -70,7 +70,8 @@
                 app:autoSizeTextType="uniform"
                 app:layout_constraintEnd_toStartOf="@+id/buttonTabRequestTwo"
                 app:layout_constraintStart_toStartOf="@+id/guideline4"
-                app:layout_constraintTop_toTopOf="@+id/guideline13" />
+                app:layout_constraintTop_toTopOf="@+id/guideline13"
+                app:backgroundTint="@null"/>
 
             <Button
                 android:id="@+id/buttonTabRequestThree"
@@ -95,7 +96,8 @@
                 app:layout_constraintBottom_toTopOf="@+id/guideline14"
                 app:layout_constraintEnd_toStartOf="@+id/buttonTabRequestFour"
                 app:layout_constraintStart_toStartOf="@+id/guideline4"
-                app:layout_constraintTop_toBottomOf="@+id/buttonTabRequestOne" />
+                app:layout_constraintTop_toBottomOf="@+id/buttonTabRequestOne"
+                app:backgroundTint="@null"/>
 
             <Button
                 android:id="@+id/buttonTabRequestTwo"
@@ -117,7 +119,8 @@
                 app:autoSizeTextType="uniform"
                 app:layout_constraintEnd_toStartOf="@+id/guideline3"
                 app:layout_constraintStart_toEndOf="@+id/buttonTabRequestOne"
-                app:layout_constraintTop_toTopOf="@+id/guideline13" />
+                app:layout_constraintTop_toTopOf="@+id/guideline13"
+                app:backgroundTint="@null"/>
 
             <Button
                 android:id="@+id/buttonTabRequestFour"
@@ -142,7 +145,8 @@
                 app:layout_constraintBottom_toTopOf="@+id/guideline14"
                 app:layout_constraintEnd_toStartOf="@+id/guideline3"
                 app:layout_constraintStart_toEndOf="@+id/buttonTabRequestThree"
-                app:layout_constraintTop_toBottomOf="@+id/buttonTabRequestTwo" />
+                app:layout_constraintTop_toBottomOf="@+id/buttonTabRequestTwo"
+                app:backgroundTint="@null"/>
 
             <TextView
                 android:id="@+id/textLower"
@@ -241,25 +245,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/quantityTokenChatPage"
-        android:layout_width="100dp"
-        android:layout_height="38dp"
-        android:layout_marginTop="8dp"
+    <LinearLayout
+        android:id="@+id/showAdsLinerLayoutChatPage"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="8dp"
-        android:background="@drawable/background_token"
+        android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:shadowColor="@color/black"
-        android:shadowDx="4"
-        android:shadowDy="4"
-        android:shadowRadius="8"
-        android:text="5"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/guideline15"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline15"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/quantityTokenChatPage"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_token"
+            android:gravity="center"
+            android:shadowColor="@color/black"
+            android:shadowDx="4"
+            android:shadowDy="4"
+            android:shadowRadius="8"
+            android:text="5"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:visibility="visible"
+            android:padding="3dp"/>
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/icon_plus_ads" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messagesRecyclerView"
@@ -277,36 +297,39 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/inputMessageLayout"
+        style="@style/textInputLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="bottom"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:hint="@string/sendMessage"
-        android:textColorHint="@color/black"
-        app:boxCornerRadiusBottomEnd="15dp"
-        app:boxCornerRadiusBottomStart="15dp"
-        app:boxCornerRadiusTopEnd="15dp"
-        app:boxCornerRadiusTopStart="15dp"
-        app:boxStrokeWidth="0.2dp"
+        app:boxBackgroundColor="#F4EDE7"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:boxStrokeColor="#DAD0C8"
+        app:boxStrokeWidth="1dp"
+        app:hintTextColor="@color/premiumColor"
         app:endIconDrawable="@drawable/baseline_send_24"
         app:endIconMode="custom"
-        app:errorEnabled="true"
+        app:errorEnabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
             android:layout_weight="1"
             android:hint="@string/sendMessage"
             android:inputType="textMultiLine"
-            android:lines="1"
-            android:minLines="1"
-            android:maxLines="3"
             android:maxLength="500"
+            android:maxLines="3"
             android:textColor="#424242"
             android:textColorHint="#9F9F9F" />
     </com.google.android.material.textfield.TextInputLayout>

@@ -20,5 +20,6 @@
         android:layout_gravity="start"
         android:background="#303030"
         app:headerLayout="@layout/header_navigation_view_layout"
-        app:itemTextColor="@color/white" />
+        app:itemTextColor="@color/white"
+        />
 </androidx.drawerlayout.widget.DrawerLayout>
