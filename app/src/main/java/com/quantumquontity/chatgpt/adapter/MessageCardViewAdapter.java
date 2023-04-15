@@ -61,7 +61,6 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             } else {
                 createCode(currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText, currentTextOrCodeView, lastHolder);
             }
-//            notifyItemChanged(mDataList.size() - 1);
         }
     }
 
@@ -96,6 +95,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         holder.stopWrite();
         holder.catGptIsWriteTextView = null;
         holder.currentTextOrCodeView = null;
+        holder.currentProgramingLanguage = null;
     }
 
     private void initNewItem(ViewHolder holder, ChatMessageCardView data) {
@@ -194,7 +194,10 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
             // Текст языка на котором написан код
             int firstLineEnd = code.indexOf("\n");
-            textProgramingLanguage.setText(firstLineEnd > -1 ? code.substring(0, firstLineEnd) : "");
+            if(firstLineEnd > -1){
+                textProgramingLanguage.setText(code.substring(0, firstLineEnd));
+                code = code.substring(firstLineEnd);
+            }
             textProgramingLanguage.setTextColor(Color.parseColor("#d9d9e3"));
 
             RelativeLayout.LayoutParams layoutParamsLanguage = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 100);
@@ -202,6 +205,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             textProgramingLanguage.setPadding(20, 20, 20, 20);
             textProgramingLanguage.setLayoutParams(layoutParamsLanguage);
             relativeLayout.addView(textProgramingLanguage);
+            holder.currentProgramingLanguage = textProgramingLanguage;
 
             RelativeLayout.LayoutParams layoutParamsImageCopy = new RelativeLayout.LayoutParams(100, 100);
             layoutParamsImageCopy.addRule(RelativeLayout.ALIGN_PARENT_END);
@@ -246,11 +250,19 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             cardView.addView(textView);
         }
         int textStart = code.indexOf(CODE_WRAPPING);
-        int firstLineEnd = code.indexOf("\n");
-        String currentCode = textStart > 0 ?
-                code.substring(firstLineEnd > 0 ? firstLineEnd + 1 : 0, textStart) :
-                firstLineEnd > 0 ? code.substring(firstLineEnd + 1) : code;
 
+        // Определение текущего кода.
+        // Выделяет из всего текста код (исключая тип кода и текст после кода, если они есть)
+        String currentCode;
+        if (holder.currentProgramingLanguage != null && holder.currentProgramingLanguage.getText().toString().isEmpty()) {
+            int firstLineEnd = code.indexOf("\n");
+            currentCode = textStart > 0 ?
+                    code.substring(firstLineEnd > 0 ? firstLineEnd + 1 : 0, textStart) :
+                    firstLineEnd > 0 ? code.substring(firstLineEnd + 1) : code;
+            holder.currentProgramingLanguage.setText(firstLineEnd > -1 ? code.substring(0, firstLineEnd) : "");
+        } else {
+            currentCode = textStart > 0 ? code.substring(0, textStart) : code;
+        }
 
         textView.setText(currentCode);
         holder.currentTextOrCodeView = textView;
@@ -280,6 +292,11 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
          * Текущее поле ввода текста или кода.
          */
         TextView currentTextOrCodeView;
+
+        /**
+         * Текущее поле языка кода.
+         */
+        TextView currentProgramingLanguage;
 
         CardView cardView;
         LinearLayout cardWrapper;
