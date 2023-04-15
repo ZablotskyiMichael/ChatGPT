@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
 
+
     /**
      * Вспомогательный класс для работы с БД
      */
@@ -158,6 +159,8 @@ public class MainActivity extends AppCompatActivity {
         loadAd();
         setOnClickListeners();
     }
+
+
 
     private void initPages() {
         for (SubPage subPage : SubPage.getAll()) {
@@ -262,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
         createNewChat.setOnClickListener(this::onStartChatClick);
 
         showAdsLinerLayout.setOnClickListener(this::showDialogAdOrPremium);
-//        showAdsLinerLayoutChatPage.setOnClickListener(this::showDialogAdOrPremium);
+        showAdsLinerLayoutChatPage.setOnClickListener(this::showDialogAdOrPremium);
 
         subscription_1_month.setOnClickListener(view -> buy1MonthSubscription());
         subscription_3_month.setOnClickListener(view -> buy3MonthsSubscription());
@@ -383,7 +386,8 @@ public class MainActivity extends AppCompatActivity {
             initMenu();
             drawerLayout.closeDrawer(GravityCompat.START);
             if (subPage == SubPage.CHAT) {
-                onBackPressed();
+                dropCurrentChatIfEmpty();
+                toMainPage();
             }
         });
         builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
@@ -469,7 +473,6 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-
         initMenu();
     }
 
@@ -493,6 +496,8 @@ public class MainActivity extends AppCompatActivity {
             chatService.deleteChat(currentChatId);
             currentChatId = -1;
             currentChatMessage = null;
+            navigationView.getMenu().clear();
+            initMenu();
         }
     }
 
@@ -786,7 +791,7 @@ public class MainActivity extends AppCompatActivity {
         buttonTabRequestFour = findViewById(R.id.buttonTabRequestFour);
 
         showAdsLinerLayout = findViewById(R.id.showAdsLinerLayout);
-//        showAdsLinerLayoutChatPage = findViewById(R.id.showAdsLinerLayoutChatPage);
+        showAdsLinerLayoutChatPage = findViewById(R.id.showAdsLinerLayoutChatPage);
 
         /* progressBar = findViewById(R.id.progressBar);*/
     }

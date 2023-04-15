@@ -44,23 +44,42 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/quantityTokenChatPage"
-            android:layout_width="100dp"
-            android:layout_height="38dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/background_token"
+
+        <LinearLayout
+            android:id="@+id/showAdsLinerLayoutChatPage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:shadowColor="@color/black"
-            android:shadowDx="4"
-            android:shadowDy="4"
-            android:shadowRadius="8"
-            android:text="5"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:visibility="visible"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/quantityTokenChatPage"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_token"
+                android:gravity="center"
+                android:shadowColor="@color/black"
+                android:shadowDx="4"
+                android:shadowDy="4"
+                android:shadowRadius="8"
+                android:text="5"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:visibility="visible"
+                android:padding="3dp"/>
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/icon_plus_ads" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -107,6 +126,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Button
+                        app:backgroundTint="@null"
                         android:id="@+id/buttonTabRequestOne"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -131,9 +151,10 @@
                         app:autoSizeTextType="uniform"
                         app:layout_constraintEnd_toStartOf="@+id/buttonTabRequestTwo"
                         app:layout_constraintStart_toStartOf="@+id/guideline4"
-                        app:layout_constraintTop_toTopOf="@+id/guideline13" />
+                        app:layout_constraintTop_toTopOf="@+id/guideline13"/>
 
                     <Button
+                        app:backgroundTint="@null"
                         android:id="@+id/buttonTabRequestThree"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -159,6 +180,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/buttonTabRequestOne" />
 
                     <Button
+                        app:backgroundTint="@null"
                         android:id="@+id/buttonTabRequestTwo"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -181,6 +203,7 @@
                         app:layout_constraintTop_toTopOf="@+id/guideline13" />
 
                     <Button
+                        app:backgroundTint="@null"
                         android:id="@+id/buttonTabRequestFour"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -279,7 +302,9 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/messagesRecyclerView"
@@ -295,10 +320,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingStart="10dp"
-        android:paddingEnd="10dp">
+        android:paddingEnd="10dp"
+        android:gravity="bottom">
 
         <!-- Текстовое поле для ввода текста -->
         <com.google.android.material.textfield.TextInputLayout
+            android:paddingTop="4dp"
             android:id="@+id/inputMessageLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
