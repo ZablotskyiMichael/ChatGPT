@@ -56,7 +56,6 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             ChatMessageCardView messageCardView = mDataList.get(mDataList.size() - 1);
             messageCardView.setText(messageCardView.getText() + newText);
             TextView currentTextOrCodeView = lastHolder.currentTextOrCodeView;
-            System.out.println("lastHolder.getId() = " + lastHolder.id + "; text = " + (currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText));
             if (lastHolder.textNow) {
                 createText(currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText, currentTextOrCodeView, lastHolder);
             } else {
@@ -78,13 +77,25 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ChatMessageCardView data = mDataList.get(position);
-        holder.cardWrapper.removeAllViews();
+
+        // Почистим все если зашли сюда
+        // т.к. recyclerView переиспользует старые View холдеры
+        clearHolder(holder);
+
         initNewItem(holder, data);
-        System.out.println("onBindViewHolder: " + data.getId() + "; " + data.getText());
         createText(data.getText(), null, holder);
         if (mDataList.size() - 1 == position) {
             lastHolder = holder;
         }
+    }
+
+    private void clearHolder(ViewHolder holder) {
+        holder.cardWrapper.removeAllViews();
+        holder.textNow = true;
+        holder.id = -1;
+        holder.stopWrite();
+        holder.catGptIsWriteTextView = null;
+        holder.currentTextOrCodeView = null;
     }
 
     private void initNewItem(ViewHolder holder, ChatMessageCardView data) {
