@@ -457,8 +457,10 @@ public class MainActivity extends AppCompatActivity {
         startChatButton.setVisibility(View.VISIBLE);
         messagesRecyclerView.setVisibility(View.GONE);
         catLogoWrapper.setVisibility(View.VISIBLE);
-        premiumExistLabel.setVisibility(View.VISIBLE);
-        premiumExistLabelWrapper.setVisibility(View.VISIBLE);
+        if(billingService.isPremium()){
+            premiumExistLabel.setVisibility(View.VISIBLE);
+            premiumExistLabelWrapper.setVisibility(View.VISIBLE);
+        }
         exampleRequest.setVisibility(View.GONE);
     }
 
