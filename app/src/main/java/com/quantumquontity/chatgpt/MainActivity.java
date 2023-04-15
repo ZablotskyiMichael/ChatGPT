@@ -430,7 +430,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (subPage == SubPage.CHAT) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            // Если открыто меню - закроем его
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (subPage == SubPage.CHAT) {
             dropCurrentChatIfEmpty();
             toMainPage();
         } else if (subPage == SubPage.SUBSCRIBE) {
