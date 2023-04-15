@@ -102,7 +102,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         }
         if (data.getUserRole().equals("system")) {
             holder.cardView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
-            imageUserOrSystem.setImageResource(R.drawable.icon_system);
+            imageUserOrSystem.setImageResource(R.drawable.chat_icon_ans);
             imageCopyMessage.setImageResource(R.drawable.image_button_copy);
             nameUserOrSystem.setText(R.string.cat_gtp);
         }
