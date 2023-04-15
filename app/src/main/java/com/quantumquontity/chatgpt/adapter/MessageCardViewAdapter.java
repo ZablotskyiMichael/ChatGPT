@@ -55,14 +55,14 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         if (!newText.isEmpty()) {
             ChatMessageCardView messageCardView = mDataList.get(mDataList.size() - 1);
             messageCardView.setText(messageCardView.getText() + newText);
-            /*TextView currentTextOrCodeView = lastHolder.currentTextOrCodeView;
+            TextView currentTextOrCodeView = lastHolder.currentTextOrCodeView;
             System.out.println("lastHolder.getId() = " + lastHolder.id + "; text = " + (currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText));
             if (lastHolder.textNow) {
                 createText(currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText, currentTextOrCodeView, lastHolder);
             } else {
                 createCode(currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText, currentTextOrCodeView, lastHolder);
-            }*/
-            notifyItemChanged(mDataList.size() - 1);
+            }
+//            notifyItemChanged(mDataList.size() - 1);
         }
     }
 
