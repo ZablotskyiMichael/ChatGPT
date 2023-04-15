@@ -477,7 +477,7 @@ public class MainActivity extends AppCompatActivity {
             TextView menuTitle = menuItem.getActionView().findViewById(R.id.menu_title);
             Button menuButton = menuItem.getActionView().findViewById(R.id.menu_button);
             menuIcon.setImageResource(R.drawable.round_message_24);
-            menuTitle.setText(chat.getName() + " " + chat.getId());
+            menuTitle.setText(chat.getName());
             menuButton.setOnClickListener(v -> {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle(R.string.deletion_confirmation);
@@ -580,6 +580,15 @@ public class MainActivity extends AppCompatActivity {
             ExecutorService executorService = client.dispatcher().executorService();
             OpenAiServiceCustom service = new OpenAiServiceCustom(aiApi, executorService);
             List<ChatMessage> messages = getLastChatMessages();
+
+            // Установка названия чата
+            if(messages.size() == 1){
+                chatService.updateChatName(currentChatId, requestMessage.length() > 40
+                        ? requestMessage.substring(0, 40) : requestMessage);
+                navigationView.getMenu().clear();
+                initMenu();
+            }
+
             ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
                     .builder()
                     .model(MODEL_TYPE)
@@ -597,7 +606,8 @@ public class MainActivity extends AppCompatActivity {
                                     runOnUiThread(this::enableInput));
                 } catch (Exception e) {
                     runOnUiThread(() -> {
-                        // TODO вернуть балл на счет?
+                        currentPoints++;
+                        pointService.updatePoints(currentPoints);
                         currentChatMessage.setText(getString(R.string.unknown_error));
                         System.out.println("Request error: " + e);
                         messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
