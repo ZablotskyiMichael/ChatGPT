@@ -19,6 +19,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -259,8 +260,8 @@ public class MainActivity extends AppCompatActivity {
         clearAllChat.setOnClickListener(this::deleteAllChat);
         createNewChat.setOnClickListener(this::onStartChatClick);
 
-        showAdsLinerLayout.setOnClickListener(this::showADsAndGetPoint);
-        showAdsLinerLayoutChatPage.setOnClickListener(this::showADsAndGetPoint);
+        showAdsLinerLayout.setOnClickListener(this::showDialogAdOrPremium);
+        showAdsLinerLayoutChatPage.setOnClickListener(this::showDialogAdOrPremium);
 
         subscription_1_month.setOnClickListener(view -> buy1MonthSubscription());
         subscription_3_month.setOnClickListener(view -> buy3MonthsSubscription());
@@ -272,6 +273,41 @@ public class MainActivity extends AppCompatActivity {
         buttonTabRequestThree.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestThree));
         buttonTabRequestFour.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestFour));
 
+    }
+
+    private void showDialogAdOrPremium(View view) {
+        // Создание алерт-диалога
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.show_ad_dialog, null);
+
+        TextView quantityTokenDialog = dialogView.findViewById(R.id.quantityTokenDialog);
+        quantityTokenDialog.setText(String.valueOf(currentPoints));
+
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+        dialogView.findViewById(R.id.showAdDialogButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // some action here
+                showADsAndGetPoint(v);
+                dialog.dismiss();
+            }
+        });
+        dialogView.findViewById(R.id.buyPremiumChatButtonDialog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // some action here
+                openSubscribePage();
+                dialog.dismiss();
+            }
+        });
+        dialogView.findViewById(R.id.closeDialog).setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     private void setInputTextFromExample(View view, Button button) {
@@ -628,6 +664,8 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             }).start();
+        }else {
+            showDialogAdOrPremium(view);
         }
     }
 
