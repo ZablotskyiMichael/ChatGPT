@@ -244,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
         llm.setReverseLayout(false);
         llm.setStackFromEnd(true);
         messagesRecyclerView.setLayoutManager(llm);
+        messagesRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 0);
         messageCardViewAdapter = new MessageCardViewAdapter(this, new ArrayList<>());
         messagesRecyclerView.setAdapter(messageCardViewAdapter);
     }
