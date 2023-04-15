@@ -373,8 +373,23 @@ public class MainActivity extends AppCompatActivity {
         buttonTabRequestThree.setText(getString(suggestsList.get(iterator.next()).getText()));
         buttonTabRequestFour.setText(getString(suggestsList.get(iterator.next()).getText()));
 
+        toChatPage();
+
+        // Сохранение нового чата
+        String newChatName = getResources().getString(R.string.new_chat);
+        long newChatId = chatService.createNewChat(newChatName);
+        currentChatId = newChatId;
+        // Добавление чата в меню
+        navigationView.getMenu().clear();
+        initMenu();
+        navigationView.getMenu().getItem(0).setChecked(true);
+        navigationView.getMenu().getItem(0).setCheckable(true);
+        messageCardViewAdapter.refreshData(new ArrayList<>());
+    }
+
+    private void toChatPage(){
         showPage(SubPage.CHAT);
-        chatsIconMainPage.setVisibility(View.VISIBLE);
+        chatsIconMainPage.setVisibility(View.GONE);
         chatsIconChatPage.setVisibility(View.VISIBLE);
         inputMessageLayout.setVisibility(View.VISIBLE);
         inputMessage.setVisibility(View.VISIBLE);
@@ -385,15 +400,6 @@ public class MainActivity extends AppCompatActivity {
         catLogoWrapper.setVisibility(View.GONE);
         premiumExistLabel.setVisibility(View.GONE);
         premiumExistLabelWrapper.setVisibility(View.GONE);
-
-        // Сохранение нового чата
-        String newChatName = getResources().getString(R.string.new_chat);
-        long newChatId = chatService.createNewChat(newChatName);
-        currentChatId = newChatId;
-        // Добавление чата в меню
-        navigationView.getMenu().clear();
-        initMenu();
-        messageCardViewAdapter.refreshData(new ArrayList<>());
     }
 
     private Set<Integer> getUniqueeNumders(int count, int maxNumber) {
@@ -454,7 +460,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void toMainPage() {
         showPage(SubPage.MAIN);
-        chatsIconMainPage.setVisibility(View.GONE);
+        chatsIconMainPage.setVisibility(View.VISIBLE);
         chatsIconChatPage.setVisibility(View.GONE);
         inputMessage.setVisibility(View.GONE);
         catLogoImageView.setVisibility(View.VISIBLE);
@@ -505,6 +511,9 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             currentChatId = item.getItemId();
             uploadMessagesForCurrentChat();
+            if(subPage != SubPage.CHAT){
+                toChatPage();
+            }
             item.setCheckable(true);
             drawerLayout.closeDrawer(GravityCompat.START);
             if (exampleRequest.getVisibility() == View.VISIBLE) {
