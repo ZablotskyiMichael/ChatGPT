@@ -110,8 +110,9 @@ public class MainActivity extends AppCompatActivity {
     private Button subscription_1_month;
     private Button subscription_3_month;
     private Button subscription_12_month;
+    private LinearLayout messagesLayout;
     private RecyclerView messagesRecyclerView;
-    private ConstraintLayout exampleRequest;
+    private LinearLayout exampleRequest;
     private LinearLayout catLogoWrapper;
     private MessageCardViewAdapter messageCardViewAdapter;
     private NavigationView navigationView;
@@ -238,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     private void initChats() {
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setReverseLayout(false);
-        llm.setStackFromEnd(false);
+        llm.setStackFromEnd(true);
         messagesRecyclerView.setLayoutManager(llm);
         messageCardViewAdapter = new MessageCardViewAdapter(this, new ArrayList<>());
         messagesRecyclerView.setAdapter(messageCardViewAdapter);
@@ -261,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
         createNewChat.setOnClickListener(this::onStartChatClick);
 
         showAdsLinerLayout.setOnClickListener(this::showDialogAdOrPremium);
-        showAdsLinerLayoutChatPage.setOnClickListener(this::showDialogAdOrPremium);
+//        showAdsLinerLayoutChatPage.setOnClickListener(this::showDialogAdOrPremium);
 
         subscription_1_month.setOnClickListener(view -> buy1MonthSubscription());
         subscription_3_month.setOnClickListener(view -> buy3MonthsSubscription());
@@ -432,6 +433,7 @@ public class MainActivity extends AppCompatActivity {
         catLogoImageView.setVisibility(View.GONE);
         startChatButton.setVisibility(View.GONE);
         messagesRecyclerView.setVisibility(View.GONE);
+        messagesLayout.setVisibility(View.GONE);
         exampleRequest.setVisibility(View.VISIBLE);
         catLogoWrapper.setVisibility(View.GONE);
         premiumExistLabel.setVisibility(View.GONE);
@@ -502,6 +504,7 @@ public class MainActivity extends AppCompatActivity {
         catLogoImageView.setVisibility(View.VISIBLE);
         startChatButton.setVisibility(View.VISIBLE);
         messagesRecyclerView.setVisibility(View.GONE);
+        messagesLayout.setVisibility(View.GONE);
         catLogoWrapper.setVisibility(View.VISIBLE);
         if(billingService.isPremium()){
             premiumExistLabel.setVisibility(View.VISIBLE);
@@ -555,10 +558,12 @@ public class MainActivity extends AppCompatActivity {
             if (exampleRequest.getVisibility() == View.VISIBLE) {
                 exampleRequest.setVisibility(View.GONE);
                 messagesRecyclerView.setVisibility(View.VISIBLE);
+                messagesLayout.setVisibility(View.VISIBLE);
             }
             if (messageCardViewAdapter.getItemCount() == 0) {
                 exampleRequest.setVisibility(View.VISIBLE);
                 messagesRecyclerView.setVisibility(View.GONE);
+                messagesLayout.setVisibility(View.GONE);
             }
             return true;
         });
@@ -588,6 +593,7 @@ public class MainActivity extends AppCompatActivity {
         if (exampleRequest.getVisibility() == View.VISIBLE) {
             exampleRequest.setVisibility(View.GONE);
             messagesRecyclerView.setVisibility(View.VISIBLE);
+            messagesLayout.setVisibility(View.VISIBLE);
         }
         if (inputMessage.getText().toString().isEmpty()) {
             // кинуть ошибку
@@ -755,6 +761,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.nav_view);
         catLogoImageView = findViewById(R.id.catLogoImageView);
         messagesRecyclerView = findViewById(R.id.messagesRecyclerView);
+        messagesLayout = findViewById(R.id.messagesLayout);
         catLogoWrapper = findViewById(R.id.catLogoWrapper);
         inputMessageLayout = findViewById(R.id.inputMessageLayout);
         premiumExistLabel = findViewById(R.id.premiumExistLabel);
@@ -779,7 +786,7 @@ public class MainActivity extends AppCompatActivity {
         buttonTabRequestFour = findViewById(R.id.buttonTabRequestFour);
 
         showAdsLinerLayout = findViewById(R.id.showAdsLinerLayout);
-        showAdsLinerLayoutChatPage = findViewById(R.id.showAdsLinerLayoutChatPage);
+//        showAdsLinerLayoutChatPage = findViewById(R.id.showAdsLinerLayoutChatPage);
 
         /* progressBar = findViewById(R.id.progressBar);*/
     }
