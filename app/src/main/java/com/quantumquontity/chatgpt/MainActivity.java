@@ -527,6 +527,10 @@ public class MainActivity extends AppCompatActivity {
                 .collect(Collectors.toList());
         for (Chat chat : sortedList) {
             MenuItem menuItem = menu.add(Menu.NONE, (int) chat.getId(), Menu.NONE, "");
+            menuItem.setCheckable(true);
+            if(currentChatId == chat.getId()){
+                menuItem.setChecked(true);
+            }
             menuItem.setActionView(R.layout.menu_item_layout);
             ImageView menuIcon = menuItem.getActionView().findViewById(R.id.menu_icon);
             TextView menuTitle = menuItem.getActionView().findViewById(R.id.menu_title);
@@ -538,6 +542,9 @@ public class MainActivity extends AppCompatActivity {
                 builder.setTitle(R.string.deletion_confirmation);
                 builder.setMessage(R.string.question_delete_this_chat);
                 builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+                    if(chat.getId() == currentChatId){
+                        toMainPage();
+                    }
                     chatService.deleteChat(chat.getId());
                     navigationView.getMenu().clear();
                     initMenu();
@@ -560,6 +567,7 @@ public class MainActivity extends AppCompatActivity {
                 toChatPage();
             }
             item.setCheckable(true);
+            item.setChecked(true);
             drawerLayout.closeDrawer(GravityCompat.START);
             if (exampleRequest.getVisibility() == View.VISIBLE) {
                 exampleRequest.setVisibility(View.GONE);
