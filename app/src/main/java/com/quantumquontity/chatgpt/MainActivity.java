@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private LinearLayout clearAllChat;
     private LinearLayout createNewChat;
-    private LinearLayout showAdsLinerLayout;
+    private LinearLayout showAdsLinerLayoutMainPage;
     private LinearLayout showAdsLinerLayoutChatPage;
     private ActionBarDrawerToggle drawerToggle;
     private TextView quantityTokenMainPage;
@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        showAdsLinerLayout.setOnClickListener(this::showDialogAdOrPremium);
+        showAdsLinerLayoutMainPage.setOnClickListener(this::showDialogAdOrPremium);
         showAdsLinerLayoutChatPage.setOnClickListener(this::showDialogAdOrPremium);
 
         subscription_1_month.setOnClickListener(view -> buy1MonthSubscription());
@@ -330,6 +330,8 @@ public class MainActivity extends AppCompatActivity {
     public void onExistPremium() {
         premiumExistLabel.setVisibility(View.VISIBLE);
         premiumExistLabelWrapper.setVisibility(View.VISIBLE);
+        showAdsLinerLayoutMainPage.setVisibility(View.GONE);
+        showAdsLinerLayoutChatPage.setVisibility(View.GONE);
         buyPremiumChatButton.setVisibility(View.GONE);
         initPoints();
     }
@@ -528,6 +530,8 @@ public class MainActivity extends AppCompatActivity {
         if(billingService.isPremium()){
             premiumExistLabel.setVisibility(View.VISIBLE);
             premiumExistLabelWrapper.setVisibility(View.VISIBLE);
+            showAdsLinerLayoutMainPage.setVisibility(View.GONE);
+            showAdsLinerLayoutChatPage.setVisibility(View.GONE);
         }
         exampleRequest.setVisibility(View.GONE);
     }
@@ -812,7 +816,7 @@ public class MainActivity extends AppCompatActivity {
         buttonTabRequestThree = findViewById(R.id.buttonTabRequestThree);
         buttonTabRequestFour = findViewById(R.id.buttonTabRequestFour);
 
-        showAdsLinerLayout = findViewById(R.id.showAdsLinerLayout);
+        showAdsLinerLayoutMainPage = findViewById(R.id.showAdsLinerLayoutMainPage);
         showAdsLinerLayoutChatPage = findViewById(R.id.showAdsLinerLayoutChatPage);
 
         /* progressBar = findViewById(R.id.progressBar);*/
