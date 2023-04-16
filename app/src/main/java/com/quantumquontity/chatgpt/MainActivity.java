@@ -39,8 +39,8 @@ import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputLayout;
 import com.quantumquontity.chatgpt.adapter.MessageCardViewAdapter;
 import com.quantumquontity.chatgpt.billing.BillingService;
@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView quantityTokenChatPage;
     private TextView premiumExistLabel;
     private ConstraintLayout premiumExistLabelWrapper;
+    private FloatingActionButton floatingScrollDownButton;
     private Button buyPremiumChatButton;
     private Button buttonTabRequestOne;
     private Button buttonTabRequestTwo;
@@ -159,8 +160,6 @@ public class MainActivity extends AppCompatActivity {
         loadAd();
         setOnClickListeners();
     }
-
-
 
     private void initPages() {
         for (SubPage subPage : SubPage.getAll()) {
@@ -247,6 +246,26 @@ public class MainActivity extends AppCompatActivity {
         messagesRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 0);
         messageCardViewAdapter = new MessageCardViewAdapter(this, new ArrayList<>());
         messagesRecyclerView.setAdapter(messageCardViewAdapter);
+
+        // Добавляем случатель видно ли последнее сообщение на экране,
+        // и если нет - отображаем кнопку прокрутки к последнему элементу
+        messagesRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int visibleItemCount = layoutManager.getChildCount();
+                int totalItemCount = layoutManager.getItemCount();
+                int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+
+                if (visibleItemCount > 0 && lastVisibleItemPosition == totalItemCount - 1) {
+                    floatingScrollDownButton.setVisibility(View.GONE);
+                } else {
+                    floatingScrollDownButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     private void initServices() {
@@ -264,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
         clearAllChat.setOnClickListener(this::deleteAllChat);
         createNewChat.setOnClickListener(view -> {
-            if(currentChatId < 0 || !chatMessageService.getChatMessagesList(currentChatId).isEmpty()){
+            if (currentChatId < 0 || !chatMessageService.getChatMessagesList(currentChatId).isEmpty()) {
                 onStartChatClick(view);
             } else {
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -285,7 +304,8 @@ public class MainActivity extends AppCompatActivity {
         buttonTabRequestTwo.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestTwo));
         buttonTabRequestThree.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestThree));
         buttonTabRequestFour.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestFour));
-
+        floatingScrollDownButton.setOnClickListener(view ->
+                messagesRecyclerView.smoothScrollToPosition(messageCardViewAdapter.getItemCount() - 1));
     }
 
     private void showDialogAdOrPremium(View view) {
@@ -351,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
         billingService.buy12MonthsSubscription();
     }
 
-    public void showPage(SubPage newPage){
+    public void showPage(SubPage newPage) {
         this.subPage = newPage;
         subPages.forEach((page, view) -> {
             view.setVisibility(page == newPage ? View.VISIBLE : View.GONE);
@@ -439,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
         messageCardViewAdapter.refreshData(new ArrayList<>());
     }
 
-    private void toChatPage(){
+    private void toChatPage() {
         showPage(SubPage.CHAT);
         chatsIconMainPage.setVisibility(View.GONE);
         chatsIconChatPage.setVisibility(View.VISIBLE);
@@ -495,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (subPage == SubPage.CHAT) {
             dropCurrentChatIfEmpty();
-            if(navigationView.getCheckedItem() != null){
+            if (navigationView.getCheckedItem() != null) {
                 navigationView.getCheckedItem().setChecked(false);
             }
             toMainPage();
@@ -527,7 +547,7 @@ public class MainActivity extends AppCompatActivity {
         messagesRecyclerView.setVisibility(View.GONE);
         messagesLayout.setVisibility(View.GONE);
         catLogoWrapper.setVisibility(View.VISIBLE);
-        if(billingService.isPremium()){
+        if (billingService.isPremium()) {
             premiumExistLabel.setVisibility(View.VISIBLE);
             premiumExistLabelWrapper.setVisibility(View.VISIBLE);
             showAdsLinerLayoutMainPage.setVisibility(View.GONE);
@@ -545,7 +565,7 @@ public class MainActivity extends AppCompatActivity {
         for (Chat chat : sortedList) {
             MenuItem menuItem = menu.add(Menu.NONE, (int) chat.getId(), Menu.NONE, "");
             menuItem.setCheckable(true);
-            if(currentChatId == chat.getId()){
+            if (currentChatId == chat.getId()) {
                 menuItem.setChecked(true);
             }
             menuItem.setActionView(R.layout.menu_item_layout);
@@ -559,7 +579,7 @@ public class MainActivity extends AppCompatActivity {
                 builder.setTitle(R.string.deletion_confirmation);
                 builder.setMessage(R.string.question_delete_this_chat);
                 builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-                    if(chat.getId() == currentChatId){
+                    if (chat.getId() == currentChatId) {
                         toMainPage();
                     }
                     chatService.deleteChat(chat.getId());
@@ -580,7 +600,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             currentChatId = item.getItemId();
             uploadMessagesForCurrentChat();
-            if(subPage != SubPage.CHAT){
+            if (subPage != SubPage.CHAT) {
                 toChatPage();
             }
             item.setCheckable(true);
@@ -668,7 +688,7 @@ public class MainActivity extends AppCompatActivity {
             List<ChatMessage> messages = getLastChatMessages();
 
             // Установка названия чата
-            if(messages.size() == 1){
+            if (messages.size() == 1) {
                 chatService.updateChatName(currentChatId, requestMessage.length() > 40
                         ? requestMessage.substring(0, 40) : requestMessage);
                 navigationView.getMenu().clear();
@@ -701,7 +721,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             }).start();
-        }else {
+        } else {
             showDialogAdOrPremium(view);
         }
     }
@@ -779,8 +799,8 @@ public class MainActivity extends AppCompatActivity {
         }
         /*progressBar.hide();*/
         // Восстановить endIcon
-       // inputMessageLayout.setEndIconDrawable(R.drawable.baseline_send_24);
-       // inputMessageLayout.setEndIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.iconEnd)));
+        // inputMessageLayout.setEndIconDrawable(R.drawable.baseline_send_24);
+        // inputMessageLayout.setEndIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.iconEnd)));
     }
 
     private void findElement() {
@@ -797,6 +817,7 @@ public class MainActivity extends AppCompatActivity {
         inputMessageLayout = findViewById(R.id.inputMessageLayout);
         premiumExistLabel = findViewById(R.id.premiumExistLabel);
         premiumExistLabelWrapper = findViewById(R.id.premiumExistLabelWrapper);
+        floatingScrollDownButton = findViewById(R.id.floatingScrollDownButton);
 
         subscription_1_month = findViewById(R.id.subscription_1_month);
         subscription_3_month = findViewById(R.id.subscription_3_month);

@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="background">#DED2C8</color>
     <color name="iconEnd">#838383</color>
+    <color name="darkBrown">#694C00</color>
     <color name="panelCardView">#343541</color>
     <color name="backgroundSubscribe">#2D363B</color>
     <color name="premiumColor">#E1A200</color>
