@@ -472,6 +472,7 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.closeDrawer(GravityCompat.START);
             } else {
                 drawerLayout.openDrawer(GravityCompat.START);
+                hideKeyboard(inputMessage);
             }
         });
         initMenu();
