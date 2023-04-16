@@ -263,7 +263,15 @@ public class MainActivity extends AppCompatActivity {
         startChatButton.setOnClickListener(this::onStartChatClick);
 
         clearAllChat.setOnClickListener(this::deleteAllChat);
-        createNewChat.setOnClickListener(this::onStartChatClick);
+        createNewChat.setOnClickListener(view -> {
+            if(currentChatId < 0 || !chatMessageService.getChatMessagesList(currentChatId).isEmpty()){
+                onStartChatClick(view);
+            } else {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                }
+            }
+        });
 
         showAdsLinerLayout.setOnClickListener(this::showDialogAdOrPremium);
         showAdsLinerLayoutChatPage.setOnClickListener(this::showDialogAdOrPremium);
@@ -508,6 +516,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void toMainPage() {
         showPage(SubPage.MAIN);
+        currentChatId = -1;
         chatsIconMainPage.setVisibility(View.VISIBLE);
         chatsIconChatPage.setVisibility(View.GONE);
         inputMessage.setVisibility(View.GONE);
