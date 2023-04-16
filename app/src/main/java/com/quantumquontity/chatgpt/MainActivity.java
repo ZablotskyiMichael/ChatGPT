@@ -485,6 +485,9 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (subPage == SubPage.CHAT) {
             dropCurrentChatIfEmpty();
+            if(navigationView.getCheckedItem() != null){
+                navigationView.getCheckedItem().setChecked(false);
+            }
             toMainPage();
         } else if (subPage == SubPage.SUBSCRIBE) {
             toMainPage();
