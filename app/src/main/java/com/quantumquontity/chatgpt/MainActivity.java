@@ -18,6 +18,7 @@ import android.app.AlertDialog;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -578,6 +579,9 @@ public class MainActivity extends AppCompatActivity {
             imageEditNameChat.setOnClickListener(v -> {
                 EditText editText = new EditText(MainActivity.this);
                 editText.setText(chat.getName());
+                // Ограничиваем количество строк в поле редактирования
+                editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE);
+                editText.setMaxLines(2);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle(R.string.edit_chat_name);
                 builder.setView(editText);

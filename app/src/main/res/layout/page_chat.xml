@@ -345,7 +345,7 @@
                 app:endIconDrawable="@drawable/baseline_send_24"
                 app:endIconMode="custom"
                 app:errorEnabled="false"
-                app:hintTextColor="@color/premiumColor">
+                app:hintTextColor="#373123">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputMessage"

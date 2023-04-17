@@ -12,10 +12,9 @@
         <item name="colorOnSurface">#00A4FF</item>
     </style>
 
-    <!--    <style name="Widget.App.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">-->
-    <!--        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TextInputLayout</item>-->
-
-    <!--    </style>-->
+    <style name="MyNavigationViewStyle" parent="Widget.Material3.NavigationView">
+        <item name="itemShapeFillColor">@color/navigation_color</item>
+    </style>
 
     <style name="textInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="android:textSize">14sp</item>
