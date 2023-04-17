@@ -151,4 +151,9 @@
     <string name="suggest_123">How to choose a birthday present?</string>
     <string name="suggest_124">How to choose a gift for the New Year?</string>
     <string name="suggest_125">How many ounces in a cup</string>
+    <string name="min_length_3_characters">Text must contain at least 3 characters</string>
+    <string name="max_length_40_characters">Text must contain no more than 40 characters</string>
+    <string name="apply">Apply</string>
+    <string name="edit_chat_name">Edit chat name</string>
+    <string name="chat_successfully_renamed">Сhat successfully renamed</string>
 </resources>

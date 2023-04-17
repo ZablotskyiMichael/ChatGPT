@@ -572,8 +572,40 @@ public class MainActivity extends AppCompatActivity {
             ImageView menuIcon = menuItem.getActionView().findViewById(R.id.menu_icon);
             TextView menuTitle = menuItem.getActionView().findViewById(R.id.menu_title);
             Button menuButton = menuItem.getActionView().findViewById(R.id.menu_button);
+            ImageView imageEditNameChat = menuItem.getActionView().findViewById(R.id.imageEditNameChat);
             menuIcon.setImageResource(R.drawable.round_message_24);
             menuTitle.setText(chat.getName());
+            imageEditNameChat.setOnClickListener(v -> {
+                EditText editText = new EditText(MainActivity.this);
+                editText.setText(chat.getName());
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle(R.string.edit_chat_name);
+                builder.setView(editText);
+                builder.setPositiveButton(R.string.apply, (dialog, which) -> {
+                    String newText = editText.getText().toString();
+                    // Проверяем длину текста
+                    if (newText.length() < 3) {
+                        // Если текст меньше 3 символов, выводим ошибку
+                        Toast.makeText(MainActivity.this, R.string.min_length_3_characters, Toast.LENGTH_SHORT).show();
+                    } else if (newText.length() > 40) {
+                        // Если текст больше 40 символов, выводим ошибку
+                        Toast.makeText(MainActivity.this, R.string.max_length_40_characters, Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Если текст соответствует условиям
+                        chatService.updateChatName(chat.getId(), editText.getText().toString());
+                        Toast.makeText(MainActivity.this, R.string.chat_successfully_renamed, Toast.LENGTH_SHORT).show();
+                    }
+                    navigationView.getMenu().clear();
+                    initMenu();
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                });
+                builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    dialog.dismiss();
+                });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            });
             menuButton.setOnClickListener(v -> {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle(R.string.deletion_confirmation);

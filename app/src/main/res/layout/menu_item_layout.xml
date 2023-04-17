@@ -2,14 +2,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    <ImageView
+        android:id="@+id/imageEditNameChat"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/edit"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true" />
     <ImageView
         android:id="@+id/menu_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/round_message_24"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true" />
+        android:layout_centerVertical="true"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@+id/imageEditNameChat"/>
 
     <TextView
         android:id="@+id/menu_title"
@@ -30,8 +37,8 @@
 
     <Button
         android:id="@+id/menu_button"
-        android:layout_width="17dp"
-        android:layout_height="20dp"
+        android:layout_width="20dp"
+        android:layout_height="25dp"
         android:background="@drawable/icon_delete"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true" />
