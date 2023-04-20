@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TOKEN = "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";
     private static final String MODEL_TYPE = "gpt-3.5-turbo";
     private static final String TAG = "MainActivity";
-    private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
+    private static final String AD_UNIT_ID = "ca-app-pub-6736423261679020/9143808296";
 
 
     /**
@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
     private PointService pointService;
 
     private RewardedAd rewardedAd;
+    private boolean rewardedAdIsLoading = false;
 
     private BillingService billingService;
 
@@ -171,56 +172,63 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadAd() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(this, AD_UNIT_ID,
-                adRequest, new RewardedAdLoadCallback() {
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error.
-                        Log.d(TAG, loadAdError.toString());
-                        rewardedAd = null;
-                    }
+        if(rewardedAd == null){
+            rewardedAdIsLoading = true;
+            AdRequest adRequest = new AdRequest.Builder().build();
+            RewardedAd.load(this, AD_UNIT_ID,
+                    adRequest, new RewardedAdLoadCallback() {
+                        @Override
+                        public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                            // Handle the error.
+                            Log.d(TAG, loadAdError.toString());
+                            rewardedAd = null;
+                            rewardedAdIsLoading = false;
+                            loadAd();
+                        }
 
-                    @Override
-                    public void onAdLoaded(@NonNull RewardedAd ad) {
-                        rewardedAd = ad;
-                        Log.d(TAG, "Ad was loaded.");
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d(TAG, "Ad was clicked.");
-                            }
+                        @Override
+                        public void onAdLoaded(@NonNull RewardedAd ad) {
+                            rewardedAd = ad;
+                            rewardedAdIsLoading = false;
+                            Log.d(TAG, "Ad was loaded.");
+                            rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                                @Override
+                                public void onAdClicked() {
+                                    // Called when a click is recorded for an ad.
+                                    Log.d(TAG, "Ad was clicked.");
+                                }
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                // Called when ad is dismissed.
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.d(TAG, "Ad dismissed fullscreen content.");
-                                rewardedAd = null;
-                            }
+                                @Override
+                                public void onAdDismissedFullScreenContent() {
+                                    // Called when ad is dismissed.
+                                    // Set the ad reference to null so you don't show the ad a second time.
+                                    Log.d(TAG, "Ad dismissed fullscreen content.");
+                                    rewardedAd = null;
+                                    loadAd();
+                                }
 
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e(TAG, "Ad failed to show fullscreen content.");
-                                rewardedAd = null;
-                            }
+                                @Override
+                                public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                    // Called when ad fails to show.
+                                    Log.e(TAG, "Ad failed to show fullscreen content.");
+                                    rewardedAd = null;
+                                }
 
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d(TAG, "Ad recorded an impression.");
-                            }
+                                @Override
+                                public void onAdImpression() {
+                                    // Called when an impression is recorded for an ad.
+                                    Log.d(TAG, "Ad recorded an impression.");
+                                }
 
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d(TAG, "Ad showed fullscreen content.");
-                            }
-                        });
-                    }
-                });
+                                @Override
+                                public void onAdShowedFullScreenContent() {
+                                    // Called when ad is shown.
+                                    Log.d(TAG, "Ad showed fullscreen content.");
+                                }
+                            });
+                        }
+                    });
+        }
     }
 
     private void initData() {
@@ -403,6 +411,9 @@ public class MainActivity extends AppCompatActivity {
                 loadAd();
             });
         } else {
+            if(!rewardedAdIsLoading){
+                loadAd();
+            }
             Toast.makeText(this, getText(R.string.ad_is_not_available), Toast.LENGTH_SHORT).show();
         }
 
