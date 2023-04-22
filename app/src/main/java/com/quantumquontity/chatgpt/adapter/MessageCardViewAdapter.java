@@ -19,6 +19,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.quantumquontity.chatgpt.MainActivity;
 import com.quantumquontity.chatgpt.R;
 import com.quantumquontity.chatgpt.dto.ChatMessageCardView;
 
@@ -30,13 +31,13 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
     private List<ChatMessageCardView> mDataList;
     private LayoutInflater mInflater;
-    private Context context;
+    private MainActivity mainActivity;
     private ViewHolder lastHolder;
 
 
-    public MessageCardViewAdapter(Context context, List<ChatMessageCardView> data) {
-        this.mInflater = LayoutInflater.from(context);
-        this.context = context;
+    public MessageCardViewAdapter(MainActivity mainActivity, List<ChatMessageCardView> data) {
+        this.mInflater = LayoutInflater.from(mainActivity);
+        this.mainActivity = mainActivity;
         this.mDataList = data;
     }
 
@@ -57,7 +58,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             messageCardView.setText(messageCardView.getText() + newText);
             TextView currentTextOrCodeView = lastHolder.currentTextOrCodeView;
             if (lastHolder.textNow) {
-                createText(currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText, currentTextOrCodeView, lastHolder);
+                createText(currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText, currentTextOrCodeView, lastHolder, false);
             } else {
                 createCode(currentTextOrCodeView != null ? currentTextOrCodeView.getText() + newText : newText, currentTextOrCodeView, lastHolder);
             }
@@ -82,7 +83,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         clearHolder(holder);
 
         initNewItem(holder, data);
-        createText(data.getText(), null, holder);
+        createText(data.getText(), null, holder, true);
         if (mDataList.size() - 1 == position) {
             lastHolder = holder;
         }
@@ -100,10 +101,10 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
     private void initNewItem(ViewHolder holder, ChatMessageCardView data) {
         holder.id = data.getId();
-        RelativeLayout linearLayout = new RelativeLayout(context);
-        ImageView imageUserOrSystem = new ImageView(context);
-        ImageView imageCopyMessage = new ImageView(context);
-        TextView nameUserOrSystem = new TextView(context);
+        RelativeLayout linearLayout = new RelativeLayout(mainActivity);
+        ImageView imageUserOrSystem = new ImageView(mainActivity);
+        ImageView imageCopyMessage = new ImageView(mainActivity);
+        TextView nameUserOrSystem = new TextView(mainActivity);
         nameUserOrSystem.setTextColor(Color.BLACK);
         nameUserOrSystem.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         if (data.getUserRole().equals("user")) {
@@ -135,8 +136,8 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
 
         imageCopyMessage.setPadding(0, 0, 40, 0);
         imageCopyMessage.setOnClickListener(v -> {
-            Toast.makeText(context, context.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
-            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            Toast.makeText(mainActivity, mainActivity.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
+            ClipboardManager clipboard = (ClipboardManager) mainActivity.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clipData = ClipData.newPlainText("label", data.getText());
             clipboard.setPrimaryClip(clipData);
         });
@@ -150,15 +151,20 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         holder.cardWrapper.addView(linearLayout);
     }
 
-    private void createText(String text, TextView textView, ViewHolder holder) {
+    /**
+     * @param firstText - если это первый текст в сообщении. (Чтоб понять, рисовать 3 точки или нет)
+     */
+    private void createText(String text, TextView textView, ViewHolder holder, boolean firstText) {
         if (text.isEmpty()) {
-            holder.startWrite(context);
+            if(firstText){
+                holder.startWrite(mainActivity);
+            }
             return;
         } else {
             holder.stopWrite();
         }
         if (textView == null) {
-            textView = new TextView(context);
+            textView = new TextView(mainActivity);
             textView.setTextSize(16);
             holder.cardWrapper.addView(textView);
         }
@@ -181,14 +187,14 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
     private void createCode(String code, TextView textView, ViewHolder holder) {
         holder.textNow = false;
         if (textView == null) {
-            CardView cardView = new CardView(context);
-            RelativeLayout relativeLayout = new RelativeLayout(context);
-            ImageView imageCopyMessage = new ImageView(context);
-            TextView textCopyMessage = new TextView(context);
-            TextView textProgramingLanguage = new TextView(context);
+            CardView cardView = new CardView(mainActivity);
+            RelativeLayout relativeLayout = new RelativeLayout(mainActivity);
+            ImageView imageCopyMessage = new ImageView(mainActivity);
+            TextView textCopyMessage = new TextView(mainActivity);
+            TextView textProgramingLanguage = new TextView(mainActivity);
 
             imageCopyMessage.setImageResource(R.drawable.image_button_copy);
-            relativeLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.panelCardView));
+            relativeLayout.setBackgroundColor(ContextCompat.getColor(mainActivity, R.color.panelCardView));
             textCopyMessage.setText(R.string.copy_code);
             textCopyMessage.setTextColor(Color.parseColor("#d9d9e3"));
 
@@ -218,8 +224,8 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
                     firstLineEnd > 0 ? code.substring(firstLineEnd + 1) : code;
 
             textCopyMessage.setOnClickListener(v -> {
-                Toast.makeText(context, context.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
-                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                Toast.makeText(mainActivity, mainActivity.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
+                ClipboardManager clipboard = (ClipboardManager) mainActivity.getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clipData = ClipData.newPlainText("label", currentCode);
                 clipboard.setPrimaryClip(clipData);
             });
@@ -231,8 +237,8 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             textCopyMessage.setLayoutParams(layoutParamsTextCopy);
 
             imageCopyMessage.setOnClickListener(v -> {
-                Toast.makeText(context, context.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
-                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                Toast.makeText(mainActivity, mainActivity.getText(R.string.messageCopied), Toast.LENGTH_SHORT).show();
+                ClipboardManager clipboard = (ClipboardManager) mainActivity.getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clipData = ClipData.newPlainText("label", currentCode);
                 clipboard.setPrimaryClip(clipData);
             });
@@ -240,12 +246,12 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             relativeLayout.addView(textCopyMessage);
             holder.cardWrapper.addView(relativeLayout);
 
-            cardView.setCardBackgroundColor(context.getResources().getColor(R.color.black));
+            cardView.setCardBackgroundColor(mainActivity.getResources().getColor(R.color.black));
             holder.cardWrapper.addView(cardView);
 
-            textView = new TextView(context);
+            textView = new TextView(mainActivity);
             textView.setPadding(16, 40, 8, 8);
-            textView.setTextColor(context.getResources().getColor(R.color.white));
+            textView.setTextColor(mainActivity.getResources().getColor(R.color.white));
             textView.setTextSize(16);
             cardView.addView(textView);
         }
@@ -268,7 +274,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         holder.currentTextOrCodeView = textView;
 
         if (textStart > -1) {
-            createText(code.substring(textStart + 3), null, holder);
+            createText(code.substring(textStart + 3), null, holder, false);
         }
     }
 
@@ -309,9 +315,9 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             cardWrapper = itemView.findViewById(R.id.cardWrapper);
         }
 
-        public void startWrite(Context context){
+        public void startWrite(MainActivity mainActivity){
             catGptIsWriting = true;
-            catGptIsWriteTextView = new TextView(context);
+            catGptIsWriteTextView = new TextView(mainActivity);
             catGptIsWriteTextView.setTextSize(16);
             cardWrapper.addView(catGptIsWriteTextView);
             Handler handler = new Handler();

@@ -145,6 +145,8 @@ public class MainActivity extends AppCompatActivity {
     private int currentPoints = 0;
     private com.quantumquontity.chatgpt.data.ChatMessage currentChatMessage = null;
 
+    private boolean chatGptIsWriting = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -707,6 +709,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             inputMessageLayout.setEndIconOnClickListener(null);
+            chatGptIsWriting = true;
 
             // Отключить возможность ввода в inputMessage
             if (inputMessage.getText() != null) {
@@ -756,7 +759,10 @@ public class MainActivity extends AppCompatActivity {
                     service.executeChatCompletion(chatCompletionRequest,
                             this::onResponse,
                             () -> // После завершения загрузки снова включить возможность ввода в inputMessageLayout и скрыть ProgressBar
-                                    runOnUiThread(this::enableInput));
+                                    runOnUiThread(() -> {
+                                        enableInput();
+                                        chatGptIsWriting = false;
+                                    }));
                 } catch (Exception e) {
                     runOnUiThread(() -> {
                         currentPoints++;
@@ -765,7 +771,10 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("Request error: " + e);
                         messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
                         enableInput();
+                        chatGptIsWriting = false;
                     });
+                } finally {
+                    chatGptIsWriting = false;
                 }
             }).start();
         } else {
@@ -888,6 +897,10 @@ public class MainActivity extends AppCompatActivity {
         showAdsLinerLayoutChatPage = findViewById(R.id.showAdsLinerLayoutChatPage);
 
         /* progressBar = findViewById(R.id.progressBar);*/
+    }
+
+    public boolean isChatGptIsWriting() {
+        return chatGptIsWriting;
     }
 
     @Override
