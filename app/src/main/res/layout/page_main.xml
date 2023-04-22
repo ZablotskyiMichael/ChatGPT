@@ -25,9 +25,8 @@
         <TextView
             android:id="@+id/chatGptIcon"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="8dp"
             android:shadowColor="@color/black"
             android:shadowDx="4"
             android:shadowDy="4"
@@ -35,8 +34,9 @@
             android:src="@drawable/baseline_menu_24"
             android:text="@string/app_name"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="24sp"
             android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
