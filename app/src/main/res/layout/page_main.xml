@@ -102,7 +102,7 @@
             android:src="@drawable/baseline_menu_24"
             android:text="@string/premium"
             android:textColor="@color/white"
-            android:textSize="30sp"
+            android:textSize="24sp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
