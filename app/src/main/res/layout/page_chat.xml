@@ -19,8 +19,8 @@
             <!-- Иконка с меню -->
             <ImageView
                 android:id="@+id/chatsIconChatPage"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:elevation="2dp"
@@ -42,6 +42,10 @@
                 android:text="@string/app_name"
                 android:textColor="@color/white"
                 android:textSize="24sp"
+                app:autoSizeMaxTextSize="24sp"
+                app:autoSizeMinTextSize="18sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -63,23 +67,23 @@
 
                 <TextView
                     android:id="@+id/quantityTokenChatPage"
-                    android:layout_width="70dp"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/background_token"
                     android:gravity="center"
-                    android:padding="3dp"
+                    android:padding="2dp"
                     android:shadowColor="@color/black"
                     android:shadowDx="4"
                     android:shadowDy="4"
                     android:shadowRadius="8"
                     android:text="5"
                     android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:visibility="visible" />
 
                 <ImageView
                     android:id="@+id/imageView3"
-                    android:layout_width="40dp"
+                    android:layout_width="30dp"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/icon_plus_ads" />
             </LinearLayout>
