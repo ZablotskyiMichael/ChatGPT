@@ -19,7 +19,7 @@
         android:id="@+id/textView23"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Available requests:"
+        android:text="@string/available_requests"
         android:shadowColor="@color/black"
         android:shadowDx="3"
         android:shadowDy="3"
@@ -61,7 +61,7 @@
         android:shadowDy="4"
         android:shadowRadius="10"
         app:drawableEndCompat="@drawable/icon_ad"
-        android:text="Show AD"
+        android:text="@string/show_ad"
         app:iconPadding="24dp"
         android:textColor="@color/white"
        />
@@ -78,7 +78,6 @@
         android:shadowDx="4"
         android:shadowDy="4"
         android:shadowRadius="10"
-
         android:layout_marginTop="8dp"
         android:text="@string/buy_premium"
         app:backgroundTint="@null"
