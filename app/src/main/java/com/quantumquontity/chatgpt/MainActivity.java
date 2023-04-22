@@ -528,11 +528,15 @@ public class MainActivity extends AppCompatActivity {
             // Если открыто меню - закроем его
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (subPage == SubPage.CHAT) {
-            dropCurrentChatIfEmpty();
-            if (navigationView.getCheckedItem() != null) {
-                navigationView.getCheckedItem().setChecked(false);
+            if(!chatGptIsWriting){
+                dropCurrentChatIfEmpty();
+                if (navigationView.getCheckedItem() != null) {
+                    navigationView.getCheckedItem().setChecked(false);
+                }
+                toMainPage();
+            } else {
+                Toast.makeText(this, getText(R.string.action_blocked_while_generation), Toast.LENGTH_SHORT).show();
             }
-            toMainPage();
         } else if (subPage == SubPage.SUBSCRIBE) {
             toMainPage();
         } else {
@@ -585,87 +589,100 @@ public class MainActivity extends AppCompatActivity {
             menuItem.setActionView(R.layout.menu_item_layout);
             ImageView menuIcon = menuItem.getActionView().findViewById(R.id.menu_icon);
             TextView menuTitle = menuItem.getActionView().findViewById(R.id.menu_title);
-            Button menuButton = menuItem.getActionView().findViewById(R.id.menu_button);
+            Button deleteChatButton = menuItem.getActionView().findViewById(R.id.deleteChatButton);
             ImageView imageEditNameChat = menuItem.getActionView().findViewById(R.id.imageEditNameChat);
             menuIcon.setImageResource(R.drawable.round_message_24);
             menuTitle.setText(chat.getName());
             imageEditNameChat.setOnClickListener(v -> {
-                EditText editText = new EditText(MainActivity.this);
-                editText.setText(chat.getName());
-                // Ограничиваем количество строк в поле редактирования
-                editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE);
-                editText.setMaxLines(2);
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle(R.string.edit_chat_name);
-                builder.setView(editText);
-                builder.setPositiveButton(R.string.apply, (dialog, which) -> {
-                    String newText = editText.getText().toString();
-                    // Проверяем длину текста
-                    if (newText.length() < 3) {
-                        // Если текст меньше 3 символов, выводим ошибку
-                        Toast.makeText(MainActivity.this, R.string.min_length_3_characters, Toast.LENGTH_SHORT).show();
-                    } else if (newText.length() > 40) {
-                        // Если текст больше 40 символов, выводим ошибку
-                        Toast.makeText(MainActivity.this, R.string.max_length_40_characters, Toast.LENGTH_SHORT).show();
-                    } else {
-                        // Если текст соответствует условиям
-                        chatService.updateChatName(chat.getId(), editText.getText().toString());
-                        Toast.makeText(MainActivity.this, R.string.chat_successfully_renamed, Toast.LENGTH_SHORT).show();
-                    }
-                    navigationView.getMenu().clear();
-                    initMenu();
-                    drawerLayout.closeDrawer(GravityCompat.START);
-                });
-                builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
-                    dialog.dismiss();
-                });
+                if(!chatGptIsWriting){
+                    EditText editText = new EditText(MainActivity.this);
+                    editText.setText(chat.getName());
+                    // Ограничиваем количество строк в поле редактирования
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE);
+                    editText.setMaxLines(2);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle(R.string.edit_chat_name);
+                    builder.setView(editText);
+                    builder.setPositiveButton(R.string.apply, (dialog, which) -> {
+                        String newText = editText.getText().toString();
+                        // Проверяем длину текста
+                        if (newText.length() < 3) {
+                            // Если текст меньше 3 символов, выводим ошибку
+                            Toast.makeText(MainActivity.this, R.string.min_length_3_characters, Toast.LENGTH_SHORT).show();
+                        } else if (newText.length() > 40) {
+                            // Если текст больше 40 символов, выводим ошибку
+                            Toast.makeText(MainActivity.this, R.string.max_length_40_characters, Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Если текст соответствует условиям
+                            chatService.updateChatName(chat.getId(), editText.getText().toString());
+                            Toast.makeText(MainActivity.this, R.string.chat_successfully_renamed, Toast.LENGTH_SHORT).show();
+                        }
+                        navigationView.getMenu().clear();
+                        initMenu();
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                    });
+                    builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
+                        dialog.dismiss();
+                    });
 
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                } else {
+                    Toast.makeText(this, getText(R.string.chat_rename_block_message), Toast.LENGTH_SHORT).show();
+                }
             });
-            menuButton.setOnClickListener(v -> {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle(R.string.deletion_confirmation);
-                builder.setMessage(R.string.question_delete_this_chat);
-                builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-                    if (chat.getId() == currentChatId) {
-                        toMainPage();
-                    }
-                    chatService.deleteChat(chat.getId());
-                    navigationView.getMenu().clear();
-                    initMenu();
-                    drawerLayout.closeDrawer(GravityCompat.START);
-                });
-                builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
-                    dialog.dismiss();
-                });
+            deleteChatButton.setOnClickListener(v -> {
+                if(!chatGptIsWriting){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle(R.string.deletion_confirmation);
+                    builder.setMessage(R.string.question_delete_this_chat);
+                    builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+                        if (chat.getId() == currentChatId) {
+                            toMainPage();
+                        }
+                        chatService.deleteChat(chat.getId());
+                        navigationView.getMenu().clear();
+                        initMenu();
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                    });
+                    builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
+                        dialog.dismiss();
+                    });
 
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                } else {
+                    Toast.makeText(this, getText(R.string.chat_delete_block_message), Toast.LENGTH_SHORT).show();
+                }
             });
 
         }
 
         navigationView.setNavigationItemSelectedListener(item -> {
-            currentChatId = item.getItemId();
-            uploadMessagesForCurrentChat();
-            if (subPage != SubPage.CHAT) {
-                toChatPage();
+            if(!chatGptIsWriting){
+                currentChatId = item.getItemId();
+                uploadMessagesForCurrentChat();
+                if (subPage != SubPage.CHAT) {
+                    toChatPage();
+                }
+                item.setCheckable(true);
+                item.setChecked(true);
+                drawerLayout.closeDrawer(GravityCompat.START);
+                if (exampleRequest.getVisibility() == View.VISIBLE) {
+                    exampleRequest.setVisibility(View.GONE);
+                    messagesRecyclerView.setVisibility(View.VISIBLE);
+                    messagesLayout.setVisibility(View.VISIBLE);
+                }
+                if (messageCardViewAdapter.getItemCount() == 0) {
+                    exampleRequest.setVisibility(View.VISIBLE);
+                    messagesRecyclerView.setVisibility(View.GONE);
+                    messagesLayout.setVisibility(View.GONE);
+                }
+                return true;
+            } else {
+                Toast.makeText(this, getText(R.string.chat_switch_block_message), Toast.LENGTH_SHORT).show();
+                return false;
             }
-            item.setCheckable(true);
-            item.setChecked(true);
-            drawerLayout.closeDrawer(GravityCompat.START);
-            if (exampleRequest.getVisibility() == View.VISIBLE) {
-                exampleRequest.setVisibility(View.GONE);
-                messagesRecyclerView.setVisibility(View.VISIBLE);
-                messagesLayout.setVisibility(View.VISIBLE);
-            }
-            if (messageCardViewAdapter.getItemCount() == 0) {
-                exampleRequest.setVisibility(View.VISIBLE);
-                messagesRecyclerView.setVisibility(View.GONE);
-                messagesLayout.setVisibility(View.GONE);
-            }
-            return true;
         });
 
     }

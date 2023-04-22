@@ -156,4 +156,8 @@
     <string name="apply">Apply</string>
     <string name="edit_chat_name">Edit chat name</string>
     <string name="chat_successfully_renamed">Сhat successfully renamed</string>
+    <string name="chat_delete_block_message">Deleting chats is not possible during response generation</string>
+    <string name="chat_switch_block_message">Chat switching is not possible during response generation</string>
+    <string name="action_blocked_while_generation">This action is not available during response generation</string>
+    <string name="chat_rename_block_message">Changing the name of the chat is not available during the generation of a response</string>
 </resources>
