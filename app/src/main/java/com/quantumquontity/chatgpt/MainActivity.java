@@ -403,8 +403,8 @@ public class MainActivity extends AppCompatActivity {
                 // Handle the reward.
                 Log.d(TAG, "The user earned the reward.");
                 int rewardAmount = rewardItem.getAmount();
-                String rewardType = rewardItem.getType();
-                currentPoints++;
+                // rewardItem.getType() - пока не используем. Но можт еще будем.
+                currentPoints+=rewardAmount;
                 pointService.updatePoints(currentPoints);
                 quantityTokenMainPage.setText(String.valueOf(currentPoints));
                 quantityTokenChatPage.setText(String.valueOf(currentPoints));
