@@ -10,7 +10,7 @@ public class PointService {
 
     private final static String SHARED_PREFERENCES_POINTS = "SHARED_PREFERENCES_POINTS";
     private final static String SHARED_PREF_POINTS_VALUE = "SHARED_PREF_POINTS_VALUE";
-    private final static int DEF_POINTS_VALUE = 10;
+    private final static int DEF_POINTS_VALUE = 15;
 
     private final MainActivity mainActivity;
 
