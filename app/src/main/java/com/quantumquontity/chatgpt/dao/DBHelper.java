@@ -51,12 +51,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 ")");
     }
 
-    /** Отрабатывает при обновлении версии Базы данных
-     * Удаляет все таблицы и загружает их заново */
-    @Override // TODO убрать дропы перед деплоем на прод :)
+    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + CHAT_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + CHAT_MESSAGE_TABLE);
-        onCreate(db);
+        // do nothing
     }
 }
