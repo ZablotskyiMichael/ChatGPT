@@ -88,4 +88,10 @@ public class ChatMessageDao {
         );
         dbHelper.close();
     }
+
+    public void deleteChatMessage(long id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(CHAT_MESSAGE_TABLE, ID_COLUMN + " = ?", new String[]{String.valueOf(id)});
+        dbHelper.close();
+    }
 }

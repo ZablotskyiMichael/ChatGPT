@@ -26,4 +26,8 @@ public class ChatMessageService {
         message.setId(id);
         return message;
     }
+
+    public void deleteChatMessage(long id){
+        chatMessageDao.deleteChatMessage(id);
+    }
 }

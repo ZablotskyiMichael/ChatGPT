@@ -8,6 +8,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="background">#DED2C8</color>
+    <color name="inputTextColor">#373123</color>
+    <color name="inputTextBackground">#F4EDE7</color>
+    <color name="inputTextStroke">#DAD0C8</color>
     <color name="iconEnd">#838383</color>
     <color name="darkBrown">#694C00</color>
     <color name="panelCardView">#343541</color>

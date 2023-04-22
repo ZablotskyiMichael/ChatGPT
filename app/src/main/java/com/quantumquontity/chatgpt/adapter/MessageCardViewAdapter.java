@@ -49,7 +49,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
     public int addItem(ChatMessageCardView item) {
         mDataList.add(item);
         notifyItemInserted(mDataList.size() - 1);
-        return mDataList.size() - 1;
+        return mDataList.size();
     }
 
     public void updateLastItemText(String newText) {
@@ -76,6 +76,13 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
     // Связываем данные с элементом списка (карточкой)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        if (mDataList.size() <= position) {
+            if (mDataList.size() > 0) {
+                createEmptyElement(holder);
+            }
+            return;
+        }
+
         ChatMessageCardView data = mDataList.get(position);
 
         // Почистим все если зашли сюда
@@ -87,6 +94,11 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         if (mDataList.size() - 1 == position) {
             lastHolder = holder;
         }
+    }
+
+    private void createEmptyElement(ViewHolder holder) {
+        holder.cardWrapper.getLayoutParams().height = mainActivity.getGlobalValuesHolder().get40dpInPx();
+        ((CardView)holder.cardWrapper.getParent()).setCardElevation(0f);
     }
 
     private void clearHolder(ViewHolder holder) {
@@ -281,7 +293,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
     // Возвращает количество элементов в списке (карточек)
     @Override
     public int getItemCount() {
-        return mDataList.size();
+        return mDataList.size() + 1;
     }
 
     // Хранит и переиспользует представления элементов списка (карточек)

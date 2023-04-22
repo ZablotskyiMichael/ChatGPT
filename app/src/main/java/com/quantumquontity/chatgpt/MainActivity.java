@@ -15,8 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -40,6 +38,7 @@ import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
@@ -55,6 +54,7 @@ import com.quantumquontity.chatgpt.dict.Suggests;
 import com.quantumquontity.chatgpt.dto.ChatMessageCardView;
 import com.quantumquontity.chatgpt.service.ChatMessageService;
 import com.quantumquontity.chatgpt.service.ChatService;
+import com.quantumquontity.chatgpt.service.GlobalValuesHolder;
 import com.quantumquontity.chatgpt.service.PointService;
 import com.theokanning.openai.OpenAiApi;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ChatService chatService;
     private ChatMessageService chatMessageService;
+
+    private GlobalValuesHolder globalValuesHolder;
     private ImageView catLogoImageView;
     private TextInputLayout inputMessageLayout;
     private ImageView chatsIconMainPage;
@@ -130,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView premiumExistLabel;
     private ConstraintLayout premiumExistLabelWrapper;
     private FloatingActionButton floatingScrollDownButton;
+    private ExtendedFloatingActionButton floatingStopGenerationButton;
     private Button buyPremiumChatButton;
     private Button buttonTabRequestOne;
     private Button buttonTabRequestTwo;
@@ -158,11 +161,20 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setNavigationBarColor(getColor(R.color.background));
 
         findElement();
+        initGlobalValues();
         initPages();
         initServices();
         initData();
         loadAd();
         setOnClickListeners();
+    }
+
+    private void initGlobalValues() {
+        globalValuesHolder = new GlobalValuesHolder(this.getResources());
+    }
+
+    public GlobalValuesHolder getGlobalValuesHolder() {
+        return globalValuesHolder;
     }
 
     private void initPages() {
@@ -174,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadAd() {
-        if(rewardedAd == null){
+        if (rewardedAd == null) {
             rewardedAdIsLoading = true;
             AdRequest adRequest = new AdRequest.Builder().build();
             RewardedAd.load(this, AD_UNIT_ID,
@@ -316,7 +328,21 @@ public class MainActivity extends AppCompatActivity {
         buttonTabRequestThree.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestThree));
         buttonTabRequestFour.setOnClickListener(view -> setInputTextFromExample(view, buttonTabRequestFour));
         floatingScrollDownButton.setOnClickListener(view ->
-                messagesRecyclerView.smoothScrollToPosition(messageCardViewAdapter.getItemCount() - 1));
+                messagesRecyclerView.smoothScrollToPosition(messageCardViewAdapter.getItemCount()));
+        floatingStopGenerationButton.setOnClickListener(view -> {
+            if(chatGptIsWriting){
+                // остановить печать
+                chatGptIsWriting = false;
+                floatingStopGenerationButton.setText(R.string.gerenerate_response);
+            } else {
+                // перегенерировать ответ
+                List<com.quantumquontity.chatgpt.data.ChatMessage> chatMessagesList = chatMessageService.getChatMessagesList(currentChatId);
+                chatMessageService.deleteChatMessage(chatMessagesList.get(chatMessagesList.size() - 1).getId());
+                uploadMessagesForCurrentChat();
+                onSendMessage(inputMessageLayout, null);
+            }
+            messagesRecyclerView.smoothScrollToPosition(messageCardViewAdapter.getItemCount());
+        });
     }
 
     private void showDialogAdOrPremium(View view) {
@@ -406,14 +432,14 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "The user earned the reward.");
                 int rewardAmount = rewardItem.getAmount();
                 // rewardItem.getType() - пока не используем. Но можт еще будем.
-                currentPoints+=rewardAmount;
+                currentPoints += rewardAmount;
                 pointService.updatePoints(currentPoints);
                 quantityTokenMainPage.setText(String.valueOf(currentPoints));
                 quantityTokenChatPage.setText(String.valueOf(currentPoints));
                 loadAd();
             });
         } else {
-            if(!rewardedAdIsLoading){
+            if (!rewardedAdIsLoading) {
                 loadAd();
             }
             Toast.makeText(this, getText(R.string.ad_is_not_available), Toast.LENGTH_SHORT).show();
@@ -459,6 +485,7 @@ public class MainActivity extends AppCompatActivity {
         buttonTabRequestThree.setText(getString(suggestsList.get(iterator.next()).getText()));
         buttonTabRequestFour.setText(getString(suggestsList.get(iterator.next()).getText()));
 
+        messageCardViewAdapter.refreshData(new ArrayList<>());
         toChatPage();
 
         // Сохранение нового чата
@@ -470,7 +497,6 @@ public class MainActivity extends AppCompatActivity {
         initMenu();
         navigationView.getMenu().getItem(0).setChecked(true);
         navigationView.getMenu().getItem(0).setCheckable(true);
-        messageCardViewAdapter.refreshData(new ArrayList<>());
     }
 
     private void toChatPage() {
@@ -487,6 +513,8 @@ public class MainActivity extends AppCompatActivity {
         catLogoWrapper.setVisibility(View.GONE);
         premiumExistLabel.setVisibility(View.GONE);
         premiumExistLabelWrapper.setVisibility(View.GONE);
+        floatingStopGenerationButton.setVisibility(messageCardViewAdapter.getItemCount() > 1 ? View.VISIBLE : View.GONE);
+        floatingStopGenerationButton.setText(R.string.gerenerate_response);
     }
 
     private Set<Integer> getUniqueeNumders(int count, int maxNumber) {
@@ -528,7 +556,7 @@ public class MainActivity extends AppCompatActivity {
             // Если открыто меню - закроем его
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (subPage == SubPage.CHAT) {
-            if(!chatGptIsWriting){
+            if (!chatGptIsWriting) {
                 dropCurrentChatIfEmpty();
                 if (navigationView.getCheckedItem() != null) {
                     navigationView.getCheckedItem().setChecked(false);
@@ -594,7 +622,7 @@ public class MainActivity extends AppCompatActivity {
             menuIcon.setImageResource(R.drawable.round_message_24);
             menuTitle.setText(chat.getName());
             imageEditNameChat.setOnClickListener(v -> {
-                if(!chatGptIsWriting){
+                if (!chatGptIsWriting) {
                     EditText editText = new EditText(MainActivity.this);
                     editText.setText(chat.getName());
                     // Ограничиваем количество строк в поле редактирования
@@ -632,7 +660,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             deleteChatButton.setOnClickListener(v -> {
-                if(!chatGptIsWriting){
+                if (!chatGptIsWriting) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setTitle(R.string.deletion_confirmation);
                     builder.setMessage(R.string.question_delete_this_chat);
@@ -659,7 +687,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         navigationView.setNavigationItemSelectedListener(item -> {
-            if(!chatGptIsWriting){
+            if (!chatGptIsWriting) {
                 currentChatId = item.getItemId();
                 uploadMessagesForCurrentChat();
                 if (subPage != SubPage.CHAT) {
@@ -668,12 +696,13 @@ public class MainActivity extends AppCompatActivity {
                 item.setCheckable(true);
                 item.setChecked(true);
                 drawerLayout.closeDrawer(GravityCompat.START);
+                floatingStopGenerationButton.setVisibility(messageCardViewAdapter.getItemCount() > 1 ? View.VISIBLE : View.GONE);
                 if (exampleRequest.getVisibility() == View.VISIBLE) {
                     exampleRequest.setVisibility(View.GONE);
                     messagesRecyclerView.setVisibility(View.VISIBLE);
                     messagesLayout.setVisibility(View.VISIBLE);
                 }
-                if (messageCardViewAdapter.getItemCount() == 0) {
+                if (messageCardViewAdapter.getItemCount() == 1) {
                     exampleRequest.setVisibility(View.VISIBLE);
                     messagesRecyclerView.setVisibility(View.GONE);
                     messagesLayout.setVisibility(View.GONE);
@@ -713,10 +742,13 @@ public class MainActivity extends AppCompatActivity {
             messagesLayout.setVisibility(View.VISIBLE);
         }
         if (inputMessage.getText().toString().isEmpty()) {
-            // кинуть ошибку
+            Toast.makeText(this, getText(R.string.enter_request), Toast.LENGTH_SHORT).show();
             return;
         }
+        onSendMessage(view, inputMessage.getText().toString());
+    }
 
+    private void onSendMessage(View view, String requestMessage) {
         if (currentPoints > 0 || isInfinityPoints()) {
             if (!isInfinityPoints()) {
                 currentPoints--;
@@ -727,23 +759,19 @@ public class MainActivity extends AppCompatActivity {
 
             inputMessageLayout.setEndIconOnClickListener(null);
             chatGptIsWriting = true;
+            floatingStopGenerationButton.setVisibility(View.VISIBLE);
+            floatingStopGenerationButton.setText(R.string.stop_generating);
 
             // Отключить возможность ввода в inputMessage
-            if (inputMessage.getText() != null) {
-                inputMessage.setEnabled(false);
-            }
+            inputMessage.setEnabled(false);
 
-            // Включить ProgressBar и выполнить действия по загрузке
-       /* progressBar.setVisibility(View.VISIBLE);
-        progressBar.show();*/
-
-            // выполнить действия по загрузке, отправку данных на сервер ИИ
-
-            String requestMessage = inputMessage.getText().toString();
             inputMessage.setText("");
 
-            createAndSaveChatMessage(requestMessage, ChatMessageRole.USER);
+            if(requestMessage != null){
+                createAndSaveChatMessage(requestMessage, ChatMessageRole.USER);
+            }
             currentChatMessage = createAndSaveChatMessage("", ChatMessageRole.SYSTEM);
+            messageCardViewAdapter.notifyItemChanged(messageCardViewAdapter.getItemCount());
 
             ObjectMapper mapper = defaultObjectMapper();
             OkHttpClient client = defaultClient(TOKEN, Duration.ofSeconds(30));
@@ -755,7 +783,7 @@ public class MainActivity extends AppCompatActivity {
             List<ChatMessage> messages = getLastChatMessages();
 
             // Установка названия чата
-            if (messages.size() == 1) {
+            if (messages.size() == 1 && requestMessage != null) {
                 chatService.updateChatName(currentChatId, requestMessage.length() > 40
                         ? requestMessage.substring(0, 40) : requestMessage);
                 navigationView.getMenu().clear();
@@ -779,7 +807,9 @@ public class MainActivity extends AppCompatActivity {
                                     runOnUiThread(() -> {
                                         enableInput();
                                         chatGptIsWriting = false;
-                                    }));
+                                        floatingStopGenerationButton.setText(R.string.gerenerate_response);
+                                    }),
+                            this);
                 } catch (Exception e) {
                     runOnUiThread(() -> {
                         currentPoints++;
@@ -789,9 +819,13 @@ public class MainActivity extends AppCompatActivity {
                         messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
                         enableInput();
                         chatGptIsWriting = false;
+                        floatingStopGenerationButton.setText(R.string.gerenerate_response);
                     });
                 } finally {
-                    chatGptIsWriting = false;
+                    runOnUiThread(() -> {
+                        chatGptIsWriting = false;
+                        floatingStopGenerationButton.setText(R.string.gerenerate_response);
+                    });
                 }
             }).start();
         } else {
@@ -891,6 +925,7 @@ public class MainActivity extends AppCompatActivity {
         premiumExistLabel = findViewById(R.id.premiumExistLabel);
         premiumExistLabelWrapper = findViewById(R.id.premiumExistLabelWrapper);
         floatingScrollDownButton = findViewById(R.id.floatingScrollDownButton);
+        floatingStopGenerationButton = findViewById(R.id.floatingStopGenerationButton);
 
         subscription_1_month = findViewById(R.id.subscription_1_month);
         subscription_3_month = findViewById(R.id.subscription_3_month);

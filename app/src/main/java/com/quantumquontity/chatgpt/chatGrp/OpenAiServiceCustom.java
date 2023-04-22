@@ -2,6 +2,7 @@ package com.quantumquontity.chatgpt.chatGrp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quantumquontity.chatgpt.MainActivity;
 import com.theokanning.openai.OpenAiApi;
 import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
@@ -33,30 +34,32 @@ public class OpenAiServiceCustom extends OpenAiService {
     public void executeChatCompletion(
             ChatCompletionRequest request,
             Consumer<ChatCompletionChunk> consumer,
-            Runnable finalRunnable) throws IOException {
+            Runnable finalRunnable, MainActivity mainActivity) throws IOException {
         request.setStream(true);
         executeChatCompletion(
                 api.createChatCompletionStream(request),
                 consumer,
-                finalRunnable
+                finalRunnable,
+                mainActivity
         );
     }
 
     public void executeChatCompletion(
             Call<ResponseBody> apiCall,
             Consumer<ChatCompletionChunk> consumer,
-            Runnable finalRunnable
+            Runnable finalRunnable,
+            MainActivity mainActivity
     ) throws IOException {
         Response<ResponseBody> response = apiCall.execute();
-        if (response.isSuccessful()) {
-            parseSse(response, consumer);
+        if (response.isSuccessful() && mainActivity.isChatGptIsWriting()) {
+            parseSse(response, consumer, mainActivity);
             finalRunnable.run();
         } else {
             throw new IOException("Request error: " + response.code() + " " + response.message());
         }
     }
 
-    public void parseSse(Response<ResponseBody> response, Consumer<ChatCompletionChunk> consumer) {
+    public void parseSse(Response<ResponseBody> response, Consumer<ChatCompletionChunk> consumer, MainActivity mainActivity) {
         try (
                 InputStream in = response.body().byteStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in))
@@ -64,6 +67,9 @@ public class OpenAiServiceCustom extends OpenAiService {
             String line;
             SSE sse = null;
             while ((line = reader.readLine()) != null) {
+                if(!mainActivity.isChatGptIsWriting()){
+                    break;
+                }
                 if (line.startsWith("data:")) {
                     String data = line.substring(5).trim();
                     sse = new SSE(data);
