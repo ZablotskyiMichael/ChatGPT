@@ -573,7 +573,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void dropCurrentChatIfEmpty() {
-        if (chatMessageService.getChatMessagesList(currentChatId).isEmpty()) {
+        if (currentChatId > 0 && chatMessageService.getChatMessagesList(currentChatId).isEmpty()) {
             chatService.deleteChat(currentChatId);
             currentChatId = -1;
             currentChatMessage = null;
@@ -600,6 +600,10 @@ public class MainActivity extends AppCompatActivity {
             showAdsLinerLayoutChatPage.setVisibility(View.GONE);
         }
         exampleRequest.setVisibility(View.GONE);
+        dropCurrentChatIfEmpty();
+        if (navigationView.getCheckedItem() != null) {
+            navigationView.getCheckedItem().setChecked(false);
+        }
     }
 
     private void initMenu() {
