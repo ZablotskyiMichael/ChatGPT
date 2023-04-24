@@ -378,7 +378,6 @@
         app:tint="@color/darkBrown"
         android:text="@string/gerenerate_response"
         android:textColor="@color/inputTextColor"
-        style="@style/StopGenerationAppearanceOverlay_FloatingActionButton"
         app:srcCompat="@drawable/stop_generate_button" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
