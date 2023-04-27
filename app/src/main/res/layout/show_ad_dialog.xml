@@ -25,11 +25,11 @@
         android:shadowDy="3"
         android:shadowRadius="4"
         android:textColor="#694C00"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:visibility="visible"
-        app:autoSizeMaxTextSize="24sp"
-        app:autoSizeMinTextSize="18sp"
-        app:autoSizeStepGranularity="2sp"
+        app:autoSizeMaxTextSize="20sp"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeStepGranularity="1sp"
         app:autoSizeTextType="uniform"/>
 
     <TextView
@@ -44,7 +44,11 @@
         android:shadowRadius="8"
         android:text="5"
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="18sp"
+        app:autoSizeMaxTextSize="18sp"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
         android:visibility="visible"
         android:padding="3dp"
         android:layout_marginTop="8dp"/>
@@ -64,6 +68,10 @@
         android:text="@string/show_ad"
         app:iconPadding="24dp"
         android:textColor="@color/white"
+        app:autoSizeMaxTextSize="12sp"
+        app:autoSizeMinTextSize="8sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
        />
 
     <Button
@@ -82,6 +90,10 @@
         android:text="@string/buy_premium"
         app:backgroundTint="@null"
         android:textColor="@color/white"
+        app:autoSizeMaxTextSize="12sp"
+        app:autoSizeMinTextSize="8sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
          />
 
 

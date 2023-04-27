@@ -23,7 +23,11 @@
             android:gravity="center_vertical"
             android:text="@string/clearAllChats"
             android:textColor="@color/textNavigColor"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            app:autoSizeMaxTextSize="16sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"/>
 
         <ImageView
             android:id="@+id/imageView"
@@ -55,7 +59,11 @@
             android:gravity="center_vertical"
             android:text="@string/new_chat"
             android:textColor="@color/textNavigColor"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            app:autoSizeMaxTextSize="16sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"/>
     </LinearLayout>
 
 

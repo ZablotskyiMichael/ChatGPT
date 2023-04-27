@@ -177,7 +177,8 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         }
         if (textView == null) {
             textView = new TextView(mainActivity);
-            textView.setTextSize(16);
+            textView.setAutoSizeTextTypeUniformWithConfiguration(12,16,2,1);
+
             holder.cardWrapper.addView(textView);
         }
 
@@ -264,7 +265,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
             textView = new TextView(mainActivity);
             textView.setPadding(16, 40, 8, 8);
             textView.setTextColor(mainActivity.getResources().getColor(R.color.white));
-            textView.setTextSize(16);
+            textView.setAutoSizeTextTypeUniformWithConfiguration(12,16,2,1);
             cardView.addView(textView);
         }
         int textStart = code.indexOf(CODE_WRAPPING);
@@ -330,7 +331,7 @@ public class MessageCardViewAdapter extends RecyclerView.Adapter<MessageCardView
         public void startWrite(MainActivity mainActivity){
             catGptIsWriting = true;
             catGptIsWriteTextView = new TextView(mainActivity);
-            catGptIsWriteTextView.setTextSize(16);
+            catGptIsWriteTextView.setAutoSizeTextTypeUniformWithConfiguration(12,16,2,1);
             cardWrapper.addView(catGptIsWriteTextView);
             Handler handler = new Handler();
             Runnable runnable = new Runnable() {
