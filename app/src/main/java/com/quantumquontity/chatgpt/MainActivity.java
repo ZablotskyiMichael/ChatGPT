@@ -97,6 +97,12 @@ public class MainActivity extends AppCompatActivity {
     private PointService pointService;
 
     private RewardedAd rewardedAd;
+
+    /**
+     * Счетчик неудачных загрузок рекламы
+     * Если будет 5 - больше не пытаемся грузить.
+     */
+    private int adFailLoadCounter = 0;
     private boolean rewardedAdIsLoading = false;
 
     private BillingService billingService;
@@ -186,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadAd() {
-        if (rewardedAd == null) {
+        if (rewardedAd == null && adFailLoadCounter < 5) {
             rewardedAdIsLoading = true;
             AdRequest adRequest = new AdRequest.Builder().build();
             RewardedAd.load(this, AD_UNIT_ID,
@@ -197,11 +203,13 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, loadAdError.toString());
                             rewardedAd = null;
                             rewardedAdIsLoading = false;
+                            adFailLoadCounter++;
                             loadAd();
                         }
 
                         @Override
                         public void onAdLoaded(@NonNull RewardedAd ad) {
+                            adFailLoadCounter = 0;
                             rewardedAd = ad;
                             rewardedAdIsLoading = false;
                             Log.d(TAG, "Ad was loaded.");
@@ -356,21 +364,13 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setView(dialogView);
         AlertDialog dialog = builder.create();
-        dialogView.findViewById(R.id.showAdDialogButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // some action here
-                showADsAndGetPoint(v);
-                dialog.dismiss();
-            }
+        dialogView.findViewById(R.id.showAdDialogButton).setOnClickListener(v -> {
+            showADsAndGetPoint(v);
+            dialog.dismiss();
         });
-        dialogView.findViewById(R.id.buyPremiumChatButtonDialog).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // some action here
-                openSubscribePage();
-                dialog.dismiss();
-            }
+        dialogView.findViewById(R.id.buyPremiumChatButtonDialog).setOnClickListener(v -> {
+            openSubscribePage();
+            dialog.dismiss();
         });
         dialogView.findViewById(R.id.closeDialog).setOnClickListener(v -> {
             dialog.dismiss();
