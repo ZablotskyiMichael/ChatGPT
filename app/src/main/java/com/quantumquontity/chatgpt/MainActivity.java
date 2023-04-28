@@ -136,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView quantityTokenMainPage;
     private TextView quantityTokenChatPage;
     private TextView premiumExistLabel;
+    private TextView requestRespawnTimerMain;
+    private TextView requestRespawnTimerChat;
     private ConstraintLayout premiumExistLabelWrapper;
     private FloatingActionButton floatingScrollDownButton;
     private ExtendedFloatingActionButton floatingStopGenerationButton;
@@ -188,6 +190,10 @@ public class MainActivity extends AppCompatActivity {
             subPages.put(subPage, subPageView);
         }
         showPage(SubPage.MAIN);
+    }
+
+    public List<TextView> getRequestRespawnTimerTextViews(){
+        return Arrays.asList(requestRespawnTimerMain, requestRespawnTimerChat);
     }
 
     private void loadAd() {
@@ -266,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setCurrentPointsOnUI(){
+    public void setCurrentPointsOnUI(){
         int currentPoints = pointService.getCurrentPoints();
         quantityTokenMainPage.setText(currentPoints + "/" + PointService.MAX_POINTS_VALUE);
         quantityTokenChatPage.setText(currentPoints + "/" + PointService.MAX_POINTS_VALUE);
@@ -306,8 +312,8 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new DBHelper(this);
         chatService = new ChatService(new ChatDao(dbHelper));
         chatMessageService = new ChatMessageService(new ChatMessageDao(dbHelper));
-        pointService = new PointService(this);
         billingService = new BillingService(this, this::onExistPremium);
+        pointService = new PointService(this);
     }
 
     private void setOnClickListeners() {
@@ -363,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
         View dialogView = inflater.inflate(R.layout.show_ad_dialog, null);
 
         TextView quantityTokenDialog = dialogView.findViewById(R.id.quantityTokenDialog);
-        quantityTokenDialog.setText(pointService.getCurrentPoints());
+        quantityTokenDialog.setText(String.valueOf(pointService.getCurrentPoints()));
 
         builder.setView(dialogView);
         AlertDialog dialog = builder.create();
@@ -842,7 +848,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isInfinityPoints() {
+    public boolean isInfinityPoints() {
         return billingService.isPremium();
     }
 
@@ -935,6 +941,8 @@ public class MainActivity extends AppCompatActivity {
         premiumExistLabelWrapper = findViewById(R.id.premiumExistLabelWrapper);
         floatingScrollDownButton = findViewById(R.id.floatingScrollDownButton);
         floatingStopGenerationButton = findViewById(R.id.floatingStopGenerationButton);
+        requestRespawnTimerMain = findViewById(R.id.requestRespawnTimerMain);
+        requestRespawnTimerChat = findViewById(R.id.requestRespawnTimerChat);
 
         subscription_1_month = findViewById(R.id.subscription_1_month);
         subscription_3_month = findViewById(R.id.subscription_3_month);
