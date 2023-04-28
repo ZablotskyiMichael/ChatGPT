@@ -151,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
     private SubPage subPage = SubPage.MAIN;
     private Map<SubPage, ViewGroup> subPages = new HashMap<>();
     private long currentChatId = -1;
-    private int currentPoints = 0;
     private com.quantumquontity.chatgpt.data.ChatMessage currentChatMessage = null;
 
     private boolean chatGptIsWriting = false;
@@ -263,10 +262,14 @@ public class MainActivity extends AppCompatActivity {
             quantityTokenMainPage.setText(String.valueOf('\u221E'));
             quantityTokenChatPage.setText(String.valueOf('\u221E'));
         } else {
-            currentPoints = pointService.getCurrentPoints();
-            quantityTokenMainPage.setText(String.valueOf(currentPoints));
-            quantityTokenChatPage.setText(String.valueOf(currentPoints));
+            setCurrentPointsOnUI();
         }
+    }
+
+    private void setCurrentPointsOnUI(){
+        int currentPoints = pointService.getCurrentPoints();
+        quantityTokenMainPage.setText(currentPoints + "/" + PointService.MAX_POINTS_VALUE);
+        quantityTokenChatPage.setText(currentPoints + "/" + PointService.MAX_POINTS_VALUE);
     }
 
     private void initChats() {
@@ -360,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
         View dialogView = inflater.inflate(R.layout.show_ad_dialog, null);
 
         TextView quantityTokenDialog = dialogView.findViewById(R.id.quantityTokenDialog);
-        quantityTokenDialog.setText(String.valueOf(currentPoints));
+        quantityTokenDialog.setText(pointService.getCurrentPoints());
 
         builder.setView(dialogView);
         AlertDialog dialog = builder.create();
@@ -432,10 +435,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "The user earned the reward.");
                 int rewardAmount = rewardItem.getAmount();
                 // rewardItem.getType() - пока не используем. Но можт еще будем.
+                int currentPoints = pointService.getCurrentPoints();
                 currentPoints += rewardAmount;
                 pointService.updatePoints(currentPoints);
-                quantityTokenMainPage.setText(String.valueOf(currentPoints));
-                quantityTokenChatPage.setText(String.valueOf(currentPoints));
+                setCurrentPointsOnUI();
                 loadAd();
             });
         } else {
@@ -753,12 +756,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onSendMessage(View view, String requestMessage) {
+        int currentPoints = pointService.getCurrentPoints();
         if (currentPoints > 0 || isInfinityPoints()) {
             if (!isInfinityPoints()) {
                 currentPoints--;
                 pointService.updatePoints(currentPoints);
-                quantityTokenMainPage.setText(String.valueOf(currentPoints));
-                quantityTokenChatPage.setText(String.valueOf(currentPoints));
+                setCurrentPointsOnUI();
             }
 
             inputMessageLayout.setEndIconOnClickListener(null);
@@ -816,8 +819,10 @@ public class MainActivity extends AppCompatActivity {
                             this);
                 } catch (Exception e) {
                     runOnUiThread(() -> {
-                        currentPoints++;
-                        pointService.updatePoints(currentPoints);
+                        int points = pointService.getCurrentPoints();
+                        points++;
+                        pointService.updatePoints(points);
+                        setCurrentPointsOnUI();
                         currentChatMessage.setText(getString(R.string.unknown_error));
                         System.out.println("Request error: " + e);
                         messageCardViewAdapter.updateLastItemText(currentChatMessage.getText());
