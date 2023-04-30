@@ -20,8 +20,8 @@ public class PointService {
     private final static String SHARED_PREFERENCES_POINTS = "SHARED_PREFERENCES_POINTS";
     private final static String SHARED_PREF_POINTS_VALUE = "SHARED_PREF_POINTS_VALUE";
     private final static String SHARED_PREF_TIMER_VALUE = "SHARED_PREF_TIMER_VALUE";
-    private final static int DEF_POINTS_VALUE = 10;
-    public final static int MAX_POINTS_VALUE = 10;
+    private final static int DEF_POINTS_VALUE = 5;
+    public final static int MAX_POINTS_VALUE = 5;
     public final static long RESPAWN_EVERY_HOURS = 4;
 
     DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
