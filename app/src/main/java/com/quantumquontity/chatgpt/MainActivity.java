@@ -399,6 +399,8 @@ public class MainActivity extends AppCompatActivity {
         showAdsLinerLayoutMainPage.setVisibility(View.GONE);
         showAdsLinerLayoutChatPage.setVisibility(View.GONE);
         buyPremiumChatButton.setVisibility(View.GONE);
+        requestRespawnTimerChat.setVisibility(View.GONE);
+        requestRespawnTimerMain.setVisibility(View.GONE);
         initPoints();
     }
 
@@ -607,6 +609,8 @@ public class MainActivity extends AppCompatActivity {
             premiumExistLabelWrapper.setVisibility(View.VISIBLE);
             showAdsLinerLayoutMainPage.setVisibility(View.GONE);
             showAdsLinerLayoutChatPage.setVisibility(View.GONE);
+            requestRespawnTimerChat.setVisibility(View.GONE);
+            requestRespawnTimerMain.setVisibility(View.GONE);
         }
         exampleRequest.setVisibility(View.GONE);
         dropCurrentChatIfEmpty();
