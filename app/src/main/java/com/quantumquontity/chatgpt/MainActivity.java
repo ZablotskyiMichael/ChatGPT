@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TOKEN = "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";
     private static final String MODEL_TYPE = "gpt-3.5-turbo";
     private static final String TAG = "MainActivity";
-    private static final String AD_UNIT_ID = "ca-app-pub-6736423261679020/9143808296";
+    private static final String AD_UNIT_ID = "ca-app-pub-6736423261679020/2309574074";
 
 
     /**
