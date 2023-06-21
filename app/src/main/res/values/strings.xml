@@ -170,4 +170,5 @@
     <string name="no_ads">No ads</string>
     <string name="unlimited_requests">Unlimited requests</string>
     <string name="fast_response_speed">Fast response speed</string>
+    <string name="facebook_app_id" translatable="false">fb 636601591392840</string>
 </resources>

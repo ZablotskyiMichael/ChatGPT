@@ -1,5 +1,6 @@
 package com.quantumquontity.chatgpt;
 
+import static com.facebook.FacebookSdk.setAutoLogAppEventsEnabled;
 import static com.theokanning.openai.service.OpenAiService.defaultClient;
 import static com.theokanning.openai.service.OpenAiService.defaultObjectMapper;
 import static com.theokanning.openai.service.OpenAiService.defaultRetrofit;
@@ -31,11 +32,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -87,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String MODEL_TYPE = "gpt-3.5-turbo";
     private static final String TAG = "MainActivity";
     private static final String AD_UNIT_ID = "ca-app-pub-6736423261679020/2309574074";
+    private static final String MISHA_ZABLOTSKYI_SAMSUNG_S20_PLUS = "176DA669938D905F7ED33FCEDF06C3E1";
 
 
     /**
@@ -160,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.setClientToken("8004da0cb7c5b562aa3d69417788a5b8");
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_main);
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -172,8 +180,28 @@ public class MainActivity extends AppCompatActivity {
         initPages();
         initServices();
         initData();
+        setTestAdConfig();
         loadAd();
         setOnClickListeners();
+        enableAutoLogs();
+    }
+
+    /**
+     * This function assumes logger is an instance of AppEventsLogger and has been
+     * created using AppEventsLogger.newLogger() call.
+     */
+    public void enableAutoLogs () {
+        setAutoLogAppEventsEnabled(true);
+    }
+
+    private void setTestAdConfig() {
+        MobileAds.initialize(this);
+        // Добавляю свой телефон как тестовое устройство
+        RequestConfiguration configuration = new RequestConfiguration.Builder()
+                .setTestDeviceIds(Arrays.asList(MISHA_ZABLOTSKYI_SAMSUNG_S20_PLUS))
+                .build();
+
+        MobileAds.setRequestConfiguration(configuration);
     }
 
     private void initGlobalValues() {
@@ -197,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadAd() {
-        if (rewardedAd == null && adFailLoadCounter < 5) {
+        if (rewardedAd == null && adFailLoadCounter < 3) {
             rewardedAdIsLoading = true;
             AdRequest adRequest = new AdRequest.Builder().build();
             RewardedAd.load(this, AD_UNIT_ID,
